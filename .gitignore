@@ -1,0 +1,4 @@
+dist
+node_modules
+typedoc-hot-dev*
+docs

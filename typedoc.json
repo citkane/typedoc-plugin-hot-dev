@@ -1,0 +1,14 @@
+{
+	"$schema": "https://typedoc.org/schema.json",
+	"out": "docs",
+	"entryPoints": [
+		"./src/index.ts"
+	],
+	"logLevel": "Verbose",
+	"typedoc-hot-dev": {
+		"targetDocDir": "test/docs",
+		"targetCwdPath": "./",
+		"sourceDistPath": "./test/dist",
+		"sourceAssetsPath": "./test/assets"
+	}
+}
