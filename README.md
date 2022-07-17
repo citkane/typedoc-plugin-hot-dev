@@ -1,33 +1,53 @@
 ## Typedoc-Hot-Dev
+This is a helper for [TypeDoc](https://typedoc.org/) theme development.  
+
+Think 'create-react-app' live server - just for TypeDoc.
 
 
 
 #### Hot development setup
+```bash
+npm i -D typedoc-hot-dev //to be published soon
+```
+then from a build script:
+```ts
+import * as hot from 'typedoc-hot dev';
 
-You can run a hot development environment with `npm run build:hot`.  
-This will open a hot browser window which will update with your changes to code and assets.
+// do your pre-processing, eg sass, etc.
 
-The default mode is to target the documentation of this module itself, but you can also target an external project by creating a `devOptions.json` file in this project root, eg:
+hot.init([, tsc options]);
+
+```
+
+By default, the documentation for the current project (your theme) will be built. Typedoc will need to be configured for this context.
+
+You can configure the project to be documented with your theme from typedoc.json:
+
 ```jsonc
 {
-	"thatDocDir": "./docs", //external document directory
-	"thatCwdPath": "../path/to/other/project"
+	//typedoc options
+	"typedoc-hot-dev": {
+		"targetDocDir": "docs",
+		"targetCwdPath": "../some/other/project",
+		"sourceDistPath": "./dist",
+		"sourceAssetsPath": "./dist/assets"		
+	}
 }
 ```
-The target project must have typedoc correctly set up, and `thatDocDir` must correspond to the `out` of the external project.
+The target project must have typedoc correctly set up, and `targetDocDir` should correspond to the `out` of the external project.
 
 **Note**
 
-When targeting an external project for hot development, from that project, you will install typedoc-theme-yaf as so:
+When targeting an external project for hot development, from that project, you will probeebely install the theme you are developing as so:
 ```
-npm install ../path/to/typedoc-theme-yaf
+npm install ../path/to/typedoc-theme-yourtheme
 ```
 
 This will create a symlink in ./node_modules,  and cause peerdependies to break. [This is an issue with node](https://github.com/npm/npm/issues/5875).
 
-Workaround from this module directory:
+To work around this from your theme directory directory:
 ```
-npm install ../path/to/external/project/node_modules/typedoc
+npm install ../some/other/project/node_modules/typedoc
 ```
 
 and after development work is done:
