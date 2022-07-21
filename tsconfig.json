@@ -6,7 +6,9 @@
 		"moduleResolution": "node",
 		"esModuleInterop": true,
 		"declaration": true,
-		"declarationMap": true
+		"declarationMap": true,
+		"sourceMap": true,
+		"incremental": true
 	},
 	"exclude": [
 		"./node_modules"

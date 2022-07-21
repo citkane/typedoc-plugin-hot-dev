@@ -2,13 +2,17 @@
 	"$schema": "https://typedoc.org/schema.json",
 	"out": "docs",
 	"entryPoints": [
-		"./src/index.ts"
+		"./src"
 	],
+	"media": "./.tmp/media",
+	"externalPattern": ["**/node_modules/**"],
+	"excludeExternals": true,
 	"logLevel": "Verbose",
-	"typedoc-hot-dev": {
-		"targetDocDir": "test/docs",
+	"plugin": ["./dist/index.js"],
+	"hot-dev": {
+		"targetDocDir": "./doc",
 		"targetCwdPath": "./",
-		"sourceDistPath": "./test/dist",
-		"sourceAssetsPath": "./test/assets"
+		"sourceDistPath": "./dist",
+		"sourceMediaPath": "./.tmp/media"
 	}
 }
