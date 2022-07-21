@@ -1,29 +1,31 @@
 import TypeDoc = require('typedoc');
 
-const thatDocDir = process.argv.slice(2)[0];
+const args = process.argv.slice(2);
+const targetDocDir = args[0];
 
 const app = new TypeDoc.Application();
-app.options.addDeclaration({
-	help: '[typedoc-hot-dev] Options for typedoc-hot-dev',
-	name: 'typedoc-hot-dev',
-	type: TypeDoc.ParameterType.Mixed,
-	defaultValue: {},
-});
+
 app.options.addReader(new TypeDoc.TSConfigReader());
 app.options.addReader(new TypeDoc.TypeDocReader());
+
 app.bootstrap();
+
+
 const project = app.convert();
-buildDocs(app, project, thatDocDir);
+
+buildDocs(app, project, targetDocDir);
 
 // Only do a quick build to update static assets
 process.stdin.on('data', (message: Buffer | string) => {
 	message = message.toString().trim();
 	console.log(`---------------------------------------- ${message}`);
-	if (message === 'buildDocs') buildDocs(app, project, thatDocDir);
+	if (message === 'buildDocs') buildDocs(app, project, targetDocDir);
 });
 
-function buildDocs(app, project, thatDocDir: string): void {
-	app.generateDocs(project, thatDocDir)
+function buildDocs(app, project, targetDocDir: string): void {
+	console.log('------------building----------------', );
+	console.log(app.options.getValue('media'));
+	app.generateDocs(project, targetDocDir)
 		.then(() => {
 			console.log('---------------------------------------- build done');
 		})
