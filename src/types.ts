@@ -1,7 +1,7 @@
 import { ChildProcessWithoutNullStreams } from 'node:child_process';
 
 /**
- * The development options which can be overridden by "devOptions.json" in the project root directory.
+ * The development options which can be overridden by "hot-dev" in the "typedoc.json" config file.
  * 
  */
 export interface hotOptions {
@@ -16,6 +16,21 @@ export interface hotOptions {
 	 * will override the typedoc `media` option if present.
 	*/
 	sourceMediaPath: string
+}
+
+export interface hotProps {
+	/** The input options which have been resolved to absolute paths */
+	opts: hotOptions;
+	/** additional tsc options passed into the {@link lib/Hot!Hot#init} method */
+	tscOptions: string[];
+	/** Provides a handle on the typescript compiler process and controller */
+	tsc: spawnedProcess;
+	/** Provides a handle on the typedoc process and controller */
+	tdoc: spawnedProcess;
+	/** provides a handle on the file watcher */
+	fileWatcher;
+	/** Registers how many times a typdoc instance has been spawned*/
+	tdocBuildCount: number;
 }
 
 export interface spawnedProcess {

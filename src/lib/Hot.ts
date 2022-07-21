@@ -1,5 +1,6 @@
+
 import browserSync from 'browser-sync';
-import { hotOptions, runners, spawnedProcess } from '../types';
+import { hotOptions, hotProps, runners, spawnedProcess } from '../types';
 import { Application } from 'typedoc';
 import { Spawn } from './Spawn';
 import { HotEmitter } from '../HotEmitter';
@@ -8,33 +9,31 @@ import { load } from '..';
 const browser = browserSync.create();
 const testing = (process.env.Node === 'test');
 const emitter = new HotEmitter();
+const tdocApp = new Application();
 
-export default class Hot extends Spawn {
+
+/**
+ * ### Provides the API logic for event listeners.
+ * 
+ */
+export class Hot extends Spawn implements hotProps {
 	opts: hotOptions;
-	defaultOpts: hotOptions;
 	tscOptions: string[];
 	tsc: spawnedProcess;
 	tdoc: spawnedProcess;
 	fileWatcher;
-	browser: typeof browser;
 	tdocBuildCount: number;
-	aborted: boolean;
-	tdocApp: Application;
 
 	constructor(...tscOptions) {
 		super(emitter);
 		this.tscOptions = tscOptions;
-		const tdocApp = new Application();
 		load(tdocApp);
-		this.defaultOpts = tdocApp.options.getValue('hot-dev') as hotOptions;
-		this.browser = browser;
 		this.tdocBuildCount = 0;
-		this.aborted = false;
 	}
 
 	public async init(tsdocRunner: runners = 'node'): Promise<{ tsc, tdoc, fileWatcher, httpPath }> {
-
-		this.opts = this.makeOptions(this.defaultOpts);
+		const defaultOpts = tdocApp.options.getValue('hot-dev') as hotOptions;
+		this.opts = this.makeOptions(defaultOpts);
 		this.tsc = this.spawnTscWatch(this.emitter, new AbortController(), ...this.tscOptions);
 
 		return new Promise(resolve => {
@@ -54,16 +53,16 @@ export default class Hot extends Spawn {
 
 			});
 			this.emitter.on('tdoc.build.refreshed', () => {
-				!testing && this.browser.reload(); //cannot get Mocha/sinon to stub browserSync
+				!testing && browser.reload(); //cannot get Mocha/sinon to stub browserSync
 			});
 			this.emitter.on('http.server.ready', httpPath => {
-				!testing && this.browser.init({ server: httpPath }); //cannot get Mocha/sinon to stub browserSync
+				!testing && browser.init({ server: httpPath }); //cannot get Mocha/sinon to stub browserSync
 				resolve({
 					tsc: this.tsc,
 					tdoc: this.tdoc,
 					fileWatcher: this.fileWatcher,
 					httpPath
-				}); //resolve values are for the purpose of tests
+				}); //resolved values are for the purpose of tests
 			});
 			this.emitter.on('files.changed', path => {
 				if (path.startsWith(this.opts.sourceMediaPath)) {
