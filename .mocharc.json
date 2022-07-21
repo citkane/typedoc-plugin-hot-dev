@@ -1,5 +1,10 @@
 {
 	"extension": ["ts"],
-	"spec": "test/**/*.spec.ts",
-	"require": ["ts-node/register"]
+	"file": "./test/index.spec.ts",
+	"require": [
+		"ts-node/register/transpile-only",
+		"source-map-support/register",
+		"./test/hooks.ts"
+	],
+	"exit": true
 }
