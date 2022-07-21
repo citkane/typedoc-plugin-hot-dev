@@ -1,4 +1,4 @@
-## Typedoc-Hot-Dev
+## Typedoc-Plugin-Hot-Dev
 This is a helper for [TypeDoc](https://typedoc.org/) theme development.  
 
 Think 'create-react-app' live server - just for TypeDoc.
@@ -7,7 +7,7 @@ Think 'create-react-app' live server - just for TypeDoc.
 
 #### Hot development setup
 ```bash
-npm i -D typedoc-hot-dev //to be published soon
+npm i -D typedoc-plugin-hot-dev //to be published soon
 ```
 then from a build script:
 ```ts
