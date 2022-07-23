@@ -1,20 +1,40 @@
+/**
+ * #### The entry point
+ * - exports the typedoc-plugin loader
+ * - exports the Hot entry class
+ * 
+ * @module INDEX
+ */
 
 import { ParameterType, Application } from 'typedoc';
-import Hot from './lib/Hot';
-export { HotEmitter } from './HotEmitter';
+import { Hot } from './lib/Hot';
+import TypeDoc = require('typedoc');
 
+/**
+ * Hooks into typedoc as a module and declares the "hot-dev" options set.
+ * 
+ * @param app The typedoc application
+ */
 export function load(app: Application) {
-	app.options.addDeclaration({
-		help: '[hot-dev] Options for typedoc-plugin-hot-dev',
-		name: 'hot-dev',
-		type: ParameterType.Mixed,
-		defaultValue: {
-			targetDocDir: 'docs',
-			targetCwdPath: './',
-			sourceDistPath: './dist',
-			sourceMediaPath: './media'
-		},
-	});
+	!app.options.getDeclaration('hot-dev') &&
+		app.options.addDeclaration({
+			help: '[hot-dev] Options for typedoc-plugin-hot-dev',
+			name: 'hot-dev',
+			type: ParameterType.Mixed,
+			defaultValue: {
+				targetCwd: './',
+				sourceDist: './dist'
+			},
+		});
 }
 
-export default Hot;
+export function init(tdocOpts = getHotOptions()) {
+	return new Hot(tdocOpts).init();
+}
+
+function getHotOptions(){
+	const app = new TypeDoc.Application();
+	app.options.addReader(new TypeDoc.TypeDocReader());
+	app.bootstrap();
+	return app.options['_values']['hot-dev'];
+}

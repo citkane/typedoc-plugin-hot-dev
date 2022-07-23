@@ -1,33 +1,54 @@
-import TypeDoc = require('typedoc');
+/**
+ * #### The script to rebuild documentation from a spawned process.
+ * 
+ * @module spawned
+ */
+
+import td = require('typedoc');
 
 const args = process.argv.slice(2);
-const targetDocDir = args[0];
+const getOptions = args[0] === 'getOptions';
 
-const app = new TypeDoc.Application();
+const app = new td.Application();
 
-app.options.addReader(new TypeDoc.TSConfigReader());
-app.options.addReader(new TypeDoc.TypeDocReader());
+app.options.addReader(new td.ArgumentsReader(0));
+app.options.addReader(new td.TypeDocReader());
+app.options.addReader(new td.TSConfigReader());
+app.options.addReader(new td.ArgumentsReader(300));
 
 app.bootstrap();
 
+console.log('getOptions:',getOptions?'true':'false');
 
-const project = app.convert();
+if (getOptions) {
+	console.log(JSON.stringify(app.options['_values']));
+} else {
+	const project = app.convert();
+	const targetDocDir = app.options.getValue('out');
+	buildDocs(app, project, targetDocDir);
 
-buildDocs(app, project, targetDocDir);
+	// Only do a quick build to update static assets
+	process.stdin.on('data', (message: Buffer | string) => {
+		message = message.toString('utf8').trim();
+		console.log(`---------------------------------------- ${message}`);
+		if (message === 'buildDocs') buildDocs(app, project, targetDocDir);
+	});
+}
 
-// Only do a quick build to update static assets
-process.stdin.on('data', (message: Buffer | string) => {
-	message = message.toString().trim();
-	console.log(`---------------------------------------- ${message}`);
-	if (message === 'buildDocs') buildDocs(app, project, targetDocDir);
-});
-
+/**
+ * Does the final document build.
+ * This provides a shortcut for ewhen media updates and does not require a full document rebuild.
+ * @param app 
+ * @param project 
+ * @param targetDocDir 
+ * 
+ * @function
+ */
 function buildDocs(app, project, targetDocDir: string): void {
-	console.log('------------building----------------', );
-	console.log(app.options.getValue('media'));
 	app.generateDocs(project, targetDocDir)
 		.then(() => {
-			console.log('---------------------------------------- build done');
+			console.log('build done');
 		})
 		.catch((err: Error) => console.error(err));
 }
+

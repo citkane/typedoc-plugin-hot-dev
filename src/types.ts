@@ -5,32 +5,29 @@ import { ChildProcessWithoutNullStreams } from 'node:child_process';
  * 
  */
 export interface hotOptions {
-	/**The name of the document directory in the target documentation project. Typically 'docs'*/
-	targetDocDir: string,
-	/**The relative path to the root of the target project directory */
-	targetCwdPath: string,
-	/**The relative path to the theme root directory to put compiled code in. Typically `./dist`*/
-	sourceDistPath: string,
 	/**
-	 * The relative path to the theme root directory where media (.js, .css, images, etc) are stored.  
-	 * will override the typedoc `media` option if present.
+	 * The relative path to the target project directory from which documentation is to be built.  
+	 * If this is not specified, it will be the actual theme itself, ie './'
 	*/
-	sourceMediaPath: string
+	targetCwd: string,
+	/**The relative path to the directory for compiled code.  
+	 * Typically `./dist`.  
+	 * If not specified, the default tsc `outDir` will be used.
+	*/
+	sourceDist: string,
 }
 
-export interface hotProps {
-	/** The input options which have been resolved to absolute paths */
-	opts: hotOptions;
-	/** additional tsc options passed into the {@link lib/Hot!Hot#init} method */
-	tscOptions: string[];
-	/** Provides a handle on the typescript compiler process and controller */
-	tsc: spawnedProcess;
-	/** Provides a handle on the typedoc process and controller */
-	tdoc: spawnedProcess;
-	/** provides a handle on the file watcher */
-	fileWatcher;
-	/** Registers how many times a typdoc instance has been spawned*/
-	tdocBuildCount: number;
+export type allOptions = {
+	/** The tsc options as seen by a spawned process */
+	tsc?: { [key: string]: unknown };
+	/** The tdoc options as seen by typedoc */
+	tdoc?: { [key: string]: unknown };
+	/** The absolute paths for hot-dev */
+	hot?: hotOptions;
+	targetCwdPath?: string;
+	sourceMediaPath?: string;
+	sourceDistPath?: string;
+	targetDocsPath?: string;
 }
 
 export interface spawnedProcess {

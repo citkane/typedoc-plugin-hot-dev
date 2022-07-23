@@ -1,70 +1,70 @@
+/**
+ * #### Provides the highest level app logic, and is the default entry class
+ * 
+ * Manages events as defined in {@link API!HotEmitter}.
+ * 
+ * @module
+ */
 
 import browserSync from 'browser-sync';
-import { hotOptions, hotProps, runners, spawnedProcess } from '../types';
-import { Application } from 'typedoc';
+import { allOptions, hotOptions, runners, spawnedProcess } from '../types';
 import { Spawn } from './Spawn';
-import { HotEmitter } from '../HotEmitter';
-import { load } from '..';
+import { HotEmitter } from '../interface/HotEmitter';
 
 const browser = browserSync.create();
 const testing = (process.env.Node === 'test');
 const emitter = new HotEmitter();
-const tdocApp = new Application();
 
 
 /**
  * ### Provides the API logic for event listeners.
  * 
  */
-export class Hot extends Spawn implements hotProps {
-	opts: hotOptions;
-	tscOptions: string[];
+export class Hot extends Spawn {
+	opts: allOptions;
 	tsc: spawnedProcess;
 	tdoc: spawnedProcess;
 	fileWatcher;
 	tdocBuildCount: number;
 
-	constructor(...tscOptions) {
+	constructor(HotOpts: hotOptions) {
 		super(emitter);
-		this.tscOptions = tscOptions;
-		load(tdocApp);
 		this.tdocBuildCount = 0;
+		this.opts = {
+			hot: HotOpts
+		};
 	}
 
 	public async init(tsdocRunner: runners = 'node'): Promise<{ tsc, tdoc, fileWatcher, httpPath }> {
-		const defaultOpts = tdocApp.options.getValue('hot-dev') as hotOptions;
-		this.opts = this.makeOptions(defaultOpts);
-		this.tsc = this.spawnTscWatch(this.emitter, new AbortController(), ...this.tscOptions);
 
+		this.getTscConfig(this.emitter);
+		this.getTsDocOptions(this.emitter, this.opts.hot, new AbortController(), tsdocRunner);
+		
 		return new Promise(resolve => {
 
 			this.emitter.on('tsc.compile.done', () => {
-				this.fileWatcher = this.startWatchingFiles(this.opts);
+				console.log('[hot]---------------------------------------- tsc compiled in watch mode');
 				this.tdoc = this.spawnTsDoc(this.emitter, this.opts, new AbortController(), tsdocRunner, this.tdocBuildCount);
 			});
 			this.emitter.once('tdoc.build.init', () => {
-				let counter = 0;
-				const time = 100;
-				const interval = setInterval(() => {
-					const isReady = this.startHttpServer(this.opts, this.emitter, counter);
-					isReady && clearInterval(interval);
-					counter += time;
-				}, time);
+				console.log('[hot]---------------------------------------- initial documents built');
+				!testing && browser.init({ server: this.opts.targetDocsPath }); //cannot get Mocha/sinon to stub browserSync
+
+				this.fileWatcher = this.startWatchingFiles(this.opts, this.emitter);
+				resolve({
+					tsc: this.tsc,
+					tdoc: this.tdoc,
+					fileWatcher: this.fileWatcher,
+					httpPath: this.opts.targetDocsPath
+				}); //resolved values are for the purpose of tests
 
 			});
 			this.emitter.on('tdoc.build.refreshed', () => {
 				!testing && browser.reload(); //cannot get Mocha/sinon to stub browserSync
 			});
-			this.emitter.on('http.server.ready', httpPath => {
-				!testing && browser.init({ server: httpPath }); //cannot get Mocha/sinon to stub browserSync
-				resolve({
-					tsc: this.tsc,
-					tdoc: this.tdoc,
-					fileWatcher: this.fileWatcher,
-					httpPath
-				}); //resolved values are for the purpose of tests
-			});
+
 			this.emitter.on('files.changed', path => {
+				
 				if (path.startsWith(this.opts.sourceMediaPath)) {
 					console.log('[hot]---------------------------------------- change asset');
 					this.tdoc.process.stdin.write('buildDocs');
@@ -74,6 +74,18 @@ export class Hot extends Spawn implements hotProps {
 					this.tdoc.controller.abort();
 					this.tdoc = this.spawnTsDoc(this.emitter, this.opts, new AbortController(), tsdocRunner, this.tdocBuildCount);
 				}
+			});
+			this.emitter.on('options.ready', () => {
+				this.opts = this.parseOptions(this.opts);
+				this.tsc = this.spawnTscWatch(this.emitter, new AbortController(), this.opts);
+			});
+			this.emitter.on('options.set.tsc', opts => {
+				this.opts.tsc = opts;
+				this.opts.tdoc && this.emitter.options.ready();
+			});
+			this.emitter.on('options.set.tdoc', opts => {
+				this.opts.tdoc = opts;
+				this.opts.tsc && this.emitter.options.ready();
 			});
 		});
 	}

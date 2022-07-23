@@ -2,10 +2,10 @@ import path from 'path';
 import fs from 'fs-extra';
 import chokidar = require('chokidar');
 
-import { hotOptions } from '../types';
-import { HotEmitter } from '..';
+import { allOptions, hotOptions } from '../types';
+import { HotEmitter } from '../interface/HotEmitter';
 
-export default class HotUtils {
+export class HotUtils {
 	emitter: HotEmitter;
 	isReady: boolean;
 	timer;
@@ -15,42 +15,26 @@ export default class HotUtils {
 		this.timer;
 	}
 
-	protected makeOptions( options: hotOptions ): hotOptions {
+	protected parseOptions(opts: allOptions): allOptions {
 
-		const rootPath = process.cwd();
-		const optionsPath = path.join(rootPath, 'typedoc.json');
-		const outputOptions = {};
+		const cwd = process.cwd();
+		opts.targetCwdPath = path.join(cwd, opts.hot.targetCwd);
+		opts.sourceMediaPath = opts.tdoc.media as string;
+		opts.targetDocsPath = opts.tdoc.out as string;
 
-		if (fs.existsSync(optionsPath)) {
-			// eslint-disable-next-line @typescript-eslint/no-var-requires
-			const typdocOptions = require(optionsPath)['hot-dev'];
+		const distPath = opts.hot.sourceDist ? opts.hot.sourceDist : opts.tsc.compilerOptions['outDir'];
+		opts.sourceDistPath = path.join(cwd, distPath);
 
-			typdocOptions &&
-			Object.keys(typdocOptions).forEach((key) => {
-				outputOptions[key] = typdocOptions[key as keyof hotOptions];
-			});
-			
-		}
-
-		Object.keys(options).forEach(key => {
-			!outputOptions[key] && (outputOptions[key] = options[key]);
-		});
-
-		['targetCwdPath', 'sourceDistPath', 'sourceMediaPath'].forEach(key => {
-			const optionPath = path.join(rootPath, outputOptions[key as keyof hotOptions]);
-			outputOptions[key as keyof hotOptions] = optionPath;
-			if (!fs.existsSync(optionPath)) {
-				console.warn(`[warning] path "${optionPath}" for option "${key}" does not exists`);
-			}
-		});
-		return outputOptions as hotOptions;
+		return opts;
 	}
 
 	protected startHttpServer(
-		opts: hotOptions,
+		opts: allOptions,
 		emitter: HotEmitter,
-		isRetry = 0,
+		//isRetry = 0,
 	) {
+		console.log(opts);
+		/*
 		const httpPath = path.join(opts.targetCwdPath, opts.targetDocDir);
 		const httpIndexPath = path.join(httpPath, 'index.html');
 
@@ -58,24 +42,26 @@ export default class HotUtils {
 
 		if (!fs.existsSync(httpIndexPath)) {
 			(isRetry === 0) && console.warn('[hot warning] waiting to see "index.html" in the docs folder so that the http server can start.');
-			if (isRetry > 10000) { throw new Error(`Could not open a browser session after ${isRetry/10} seconds`); }
+			if (isRetry > 10000) { throw new Error(`Could not open a browser session after ${isRetry / 10} seconds`); }
 		} else {
 			isReady = true;
 			emitter.http.server.ready(httpPath);
 		}
 		return isReady;
+		*/
 	}
-	
-	protected startWatchingFiles(opts: hotOptions, emitter = this.emitter){
-		const watcher = chokidar.watch([
-			opts.sourceDistPath,
-			opts.sourceMediaPath
-		], { ignoreInitial: true })
+
+	protected startWatchingFiles(opts: allOptions, emitter = this.emitter) {
+		const watchDirs = [opts.sourceDistPath];
+		opts.sourceMediaPath && watchDirs.push(opts.sourceMediaPath);
+
+		const watcher = chokidar.watch(watchDirs, { ignoreInitial: true })
 			.on('unlink', path => this.debounceWatchCallBack(path, emitter))
 			.on('add', path => this.debounceWatchCallBack(path, emitter))
 			.on('change', path => this.debounceWatchCallBack(path, emitter))
 			.on('error', err => console.error(err));
 
+		watchDirs.forEach(dir => console.log(`[hot] watching dir "${dir}".`));
 		return watcher;
 	}
 
@@ -85,5 +71,20 @@ export default class HotUtils {
 			emitter.file.changed(path);
 		}, 100);
 	}
-	
+
+	protected isJson(string: string): false | { [key: string]: unknown } {
+		let json = false;
+		string = string.trim();
+
+		(string.startsWith('{') && string.endsWith('}')) &&
+			(() => {
+				try {
+					json = JSON.parse(string);
+				}
+				catch (err) {
+					json = false;
+				}
+			})();
+		return json as false | { [key: string]: unknown };
+	}
 }

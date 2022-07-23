@@ -2,17 +2,22 @@
 	"$schema": "https://typedoc.org/schema.json",
 	"out": "docs",
 	"entryPoints": [
-		"./src"
+		"./src/index.ts",
+		"./src/types.ts",
+		"./src/spawned.ts",
+		"./src/HotEmitter.ts",
+		"./src/lib/Hot.ts",
+		"./src/lib/Spawn.ts",
+		"./src/lib/Utils.ts"
 	],
 	"media": "./.tmp/media",
+	"treatWarningsAsErrors": false,
 	"externalPattern": ["**/node_modules/**"],
 	"excludeExternals": true,
 	"logLevel": "Verbose",
 	"plugin": ["./dist/index.js"],
 	"hot-dev": {
-		"targetDocDir": "./doc",
-		"targetCwdPath": "./",
-		"sourceDistPath": "./dist",
-		"sourceMediaPath": "./.tmp/media"
+		"sourceDist": "./.tmp/dist",
+		"targetCwd": "./",
 	}
 }
