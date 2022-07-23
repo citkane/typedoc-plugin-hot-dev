@@ -45,10 +45,5 @@ export interface processes {
 	tdoc: spawnedProcess;
 }
 
-export interface startHttpServer {
-	httpPath: string,
-	isStarted: boolean,
-	isRetry?: number
-}
-
+export type logContexts = 'tsc' | 'tdoc' | 'hot';
 export type runners = 'node' | 'ts-doc';
