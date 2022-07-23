@@ -59,5 +59,31 @@
 	},
 	"peerDependencies": {
 		"typedoc": "^0.23.0"
+	},
+	"mocha": {
+		"extension": ["ts"],
+		"file": "./test/index.spec.ts",
+		"require": [
+			"ts-node/register/transpile-only",
+			"source-map-support/register",
+			"./test/hooks.ts"
+		],
+		"exit": true
+	},
+	"nyc": {
+		"extension": [
+			".ts",
+			".tsx"
+		],
+		"include": [
+			"src/**/*.ts"
+		],
+		"reporter": [
+			"html",
+			"text"
+		],
+		"all": true,
+		"report-dir": "./test/coverage",
+		"temp-dir": "./test/.nyc_output"
 	}
 }
