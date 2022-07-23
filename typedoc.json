@@ -17,7 +17,8 @@
 	"logLevel": "Verbose",
 	"plugin": ["./dist/index.js"],
 	"hot-dev": {
-		"sourceDist": "./.tmp/dist",
+		"sourceDist": "./dist",
 		"targetCwd": "./",
+		"targetDoc": "./docs"
 	}
 }

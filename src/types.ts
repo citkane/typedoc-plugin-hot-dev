@@ -1,4 +1,5 @@
 import { ChildProcessWithoutNullStreams } from 'node:child_process';
+import path from 'node:path';
 
 /**
  * The development options which can be overridden by "hot-dev" in the "typedoc.json" config file.
@@ -15,6 +16,11 @@ export interface hotOptions {
 	 * If not specified, the default tsc `outDir` will be used.
 	*/
 	sourceDist: string,
+	/**
+	 * The relative path to the folder for built documentation.  
+	 * If not specified, will default to the target 'out' directory in the `targetCwd` space.
+	 */
+	targetDoc: string
 }
 
 export type allOptions = {
@@ -46,4 +52,4 @@ export interface processes {
 }
 
 export type logContexts = 'tsc' | 'tdoc' | 'hot';
-export type runners = 'node' | 'ts-doc';
+export type runners = 'node' | 'ts-node';

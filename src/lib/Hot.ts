@@ -38,7 +38,7 @@ export class Hot extends Spawn {
 	public async init(tsdocRunner: runners = 'node'): Promise<{ tsc, tdoc, fileWatcher, httpPath }> {
 
 		this.getTscConfig(this.emitter);
-		this.getTsDocOptions(this.emitter, this.opts.hot, new AbortController(), tsdocRunner);
+		this.getTdocOptions(this.emitter, this.opts.hot, new AbortController(), tsdocRunner);
 		
 		return new Promise(resolve => {
 
@@ -64,7 +64,6 @@ export class Hot extends Spawn {
 			});
 
 			this.emitter.on('files.changed', path => {
-				
 				if (path.startsWith(this.opts.sourceMediaPath)) {
 					this.emitter.log.message('hot', 'change asset', true);
 					this.tdoc.process.stdin.write('buildDocs');

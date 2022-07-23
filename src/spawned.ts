@@ -6,15 +6,14 @@
 
 import td = require('typedoc');
 
-const args = process.argv.slice(2);
-const getOptions = args[0] === 'getOptions';
+const hotArgs = process.argv.slice(2);
+const getOptions = (hotArgs[0] === 'getOptions');
+const targetDocDir = hotArgs[0];
 
 const app = new td.Application();
 
-app.options.addReader(new td.ArgumentsReader(0));
 app.options.addReader(new td.TypeDocReader());
 app.options.addReader(new td.TSConfigReader());
-app.options.addReader(new td.ArgumentsReader(300));
 
 app.bootstrap();
 
@@ -22,7 +21,6 @@ if (getOptions) {
 	console.log(JSON.stringify(app.options['_values']));
 } else {
 	const project = app.convert();
-	const targetDocDir = app.options.getValue('out');
 	buildDocs(app, project, targetDocDir);
 
 	// Only do a quick build to update static assets

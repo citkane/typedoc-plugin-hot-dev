@@ -16,10 +16,10 @@ export class HotUtils {
 
 	protected parseOptions(opts: allOptions): allOptions {
 
-		const cwd = process.cwd();
-		opts.targetCwdPath = path.join(cwd, opts.hot.targetCwd);
-		opts.sourceMediaPath = opts.tdoc.media as string;
-		opts.targetDocsPath = opts.tdoc.out as string;
+		const cwd = path.normalize(process.cwd());
+		opts.targetCwdPath = path.normalize(path.join(cwd, opts.hot.targetCwd));
+		opts.sourceMediaPath = path.normalize(opts.tdoc.media as string);
+		opts.targetDocsPath = opts.hot.targetDoc ? path.join(cwd, opts.hot.targetDoc) : path.normalize(opts.tdoc.out as string);
 
 		const distPath = opts.hot.sourceDist ? opts.hot.sourceDist : opts.tsc.compilerOptions['outDir'];
 		opts.sourceDistPath = path.join(cwd, distPath);

@@ -28,11 +28,11 @@ export function load(app: Application) {
 		});
 }
 
-export function init(tdocOpts = getHotOptions()) {
-	return new Hot(tdocOpts).init();
+export function init(hotOpts = getHotOptions()) {
+	return new Hot(hotOpts).init();
 }
 
-function getHotOptions(){
+export function getHotOptions(){
 	const app = new TypeDoc.Application();
 	app.options.addReader(new TypeDoc.TypeDocReader());
 	app.bootstrap();

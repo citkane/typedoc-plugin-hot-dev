@@ -82,9 +82,12 @@ export class Spawn extends HotUtils {
 		buildCount
 	): spawnedProcess {
 		const { signal } = controller;
-		const tsdoc = spawn(command, [
-			path.join(__dirname, '../spawned'),
-		], { cwd: opts.targetCwdPath, signal });
+		const tsdoc = spawn(
+			command,
+			[path.join(__dirname, '../spawned'), opts.targetDocsPath],
+			{ cwd: opts.targetCwdPath, signal }
+		);
+		//tsdoc.stdin.write(`build.${opts.targetDocsPath}`);
 
 		tsdoc.on('error', (err: Error) => {
 			(err.message !== 'The operation was aborted') && emitter.log.error('tdoc', err.message);
@@ -106,7 +109,7 @@ export class Spawn extends HotUtils {
 		return { process: tsdoc, controller };
 	}
 
-	protected getTsDocOptions(
+	protected getTdocOptions(
 		emitter: HotEmitter,
 		opts: hotOptions,
 		controller: AbortController,
