@@ -2,7 +2,7 @@
 	"name": "typedoc-plugin-hot-dev",
 	"version": "0.0.0",
 	"description": "Provides a Typedoc hot theme development environment",
-	"main": "dist/index.js",
+	"main": "./dist/index.js",
 	"scripts": {
 		"docs": "typedoc",
 		"build": "tsc",
@@ -26,6 +26,14 @@
 		"url": "https://github.com/citkane/typedoc-plugin-hot-dev/issues"
 	},
 	"homepage": "https://github.com/citkane/typedoc-plugin-hot-dev#readme",
+	"engines": {
+		"npm": ">=7.0.0",
+		"node": ">=16.0.0"
+	},
+	"bin": {
+		"typedoc-plugin-hot-dev": "./bin/hot.js",
+		"hot-dev": "./bin/hot.js"
+	},
 	"devDependencies": {
 		"@types/browser-sync": "^2.26.3",
 		"@types/chai": "^4.3.1",
