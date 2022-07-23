@@ -37,21 +37,23 @@ export class Spawn extends HotUtils {
 		let resolved = false;
 		const tsc = spawn('node_modules/.bin/tsc', tscOptions, { signal });
 
-		tsc.on('error', (err: Error) => console.error('[tsc]', err));
+		tsc.on('error', (err: Error) => emitter.log.error('tsc', err.message.toString()));
 		tsc.stdout.on('data', (data: Buffer) => {
 			const message = data.toString('utf8').trim();
-			console.log('[tsc]', message);
+			emitter.log.message('tsc', message);
 			if (!resolved && message.endsWith('Watching for file changes.')) {
 				resolved = true;
 				emitter.tsc.compile.done();
 			}
 		});
+		tsc.stderr.on('data', (data: Buffer) => emitter.log.warning('tsc', data.toString('utf8')));
 
 		return { process: tsc, controller };
 		
 	}
 	protected getTscConfig(emitter: HotEmitter) {
 		const tsc = spawn('node_modules/.bin/tsc', ['--showConfig']);
+		tsc.on('error', (err: Error) => emitter.log.error('tsc', err.message.toString()));
 		tsc.stdout.on('data', (data: Buffer) => {
 			const message = data.toString('utf8').trim();
 			const tscOpts = this.isJson(message) as { compilerOptions: { outDir } };
@@ -59,6 +61,7 @@ export class Spawn extends HotUtils {
 			tsc.kill(0);
 			emitter.options.set.tsc(tscOpts);
 		});
+		tsc.stderr.on('data', (data: Buffer) => emitter.log.warning('tsc', data.toString('utf8')));
 	}
 
 	/**
@@ -84,12 +87,12 @@ export class Spawn extends HotUtils {
 		], { cwd: opts.targetCwdPath, signal });
 
 		tsdoc.on('error', (err: Error) => {
-			(err.message !== 'The operation was aborted') && console.error(`[tsdoc error] ${err.message}`);
+			(err.message !== 'The operation was aborted') && emitter.log.error('tdoc', err.message);
 		});
 
 		tsdoc.stdout.on('data', (data: Buffer) => {
 			const message = data.toString('utf8').trim();
-			console.log(`[typedoc] ${message}`);
+			emitter.log.message('tdoc', message);
 			if (message.endsWith('build done')) {
 				if (!buildCount) {
 					buildCount = 1;
@@ -99,7 +102,7 @@ export class Spawn extends HotUtils {
 				}
 			}
 		});
-		tsdoc.stderr.on('data', (data: Buffer) => { console.error(`[typedoc] stderr: ${data}`); });
+		tsdoc.stderr.on('data', (data: Buffer) => emitter.log.warning('tdoc', data.toString('utf8')));
 		return { process: tsdoc, controller };
 	}
 
@@ -111,23 +114,16 @@ export class Spawn extends HotUtils {
 	) {
 		const cwd = path.join(process.cwd(), opts.targetCwd);
 		const { signal } = controller;
-		try {
-			const tsdoc = spawn(command, [
-				path.join(__dirname, '../spawned'),
-				'getOptions'
-			], { cwd, signal });
-			tsdoc.stdout.on('data', (data: Buffer) => {
-				const message = data.toString('utf8').trim();
-				const tsdocOpts = this.isJson(message);
-				tsdocOpts && emitter.options.set.tdoc(tsdocOpts);
-			});
-			tsdoc.stderr.on('data', (data: Buffer) => {
-				const message = data.toString('utf8').trim();
-				console.error(message);
-			});
-			tsdoc.on('error', (err: Error) => { throw err; });
-		} catch (err) {
-			console.error(err);
-		}
+		
+		const tsdoc = spawn(command, [ path.join(__dirname, '../spawned'), 'getOptions'], { cwd, signal });
+
+		tsdoc.on('error', (err: Error) => emitter.log.error('tsc', err.message.toString()));
+		tsdoc.stdout.on('data', (data: Buffer) => {
+			const message = data.toString('utf8').trim();
+			const tsdocOpts = this.isJson(message);
+			tsdocOpts && emitter.options.set.tdoc(tsdocOpts);
+		});
+		tsdoc.stderr.on('data', (data: Buffer) => emitter.log.warning('tdoc', data.toString('utf8')));
+		tsdoc.on('error', (err: Error) => { throw err; });
 	}
 }

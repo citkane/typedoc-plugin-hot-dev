@@ -1,8 +1,7 @@
 import path from 'path';
-import fs from 'fs-extra';
 import chokidar = require('chokidar');
 
-import { allOptions, hotOptions } from '../types';
+import { allOptions, logContexts } from '../types';
 import { HotEmitter } from '../interface/HotEmitter';
 
 export class HotUtils {
@@ -28,29 +27,6 @@ export class HotUtils {
 		return opts;
 	}
 
-	protected startHttpServer(
-		opts: allOptions,
-		emitter: HotEmitter,
-		//isRetry = 0,
-	) {
-		console.log(opts);
-		/*
-		const httpPath = path.join(opts.targetCwdPath, opts.targetDocDir);
-		const httpIndexPath = path.join(httpPath, 'index.html');
-
-		let isReady = false;
-
-		if (!fs.existsSync(httpIndexPath)) {
-			(isRetry === 0) && console.warn('[hot warning] waiting to see "index.html" in the docs folder so that the http server can start.');
-			if (isRetry > 10000) { throw new Error(`Could not open a browser session after ${isRetry / 10} seconds`); }
-		} else {
-			isReady = true;
-			emitter.http.server.ready(httpPath);
-		}
-		return isReady;
-		*/
-	}
-
 	protected startWatchingFiles(opts: allOptions, emitter = this.emitter) {
 		const watchDirs = [opts.sourceDistPath];
 		opts.sourceMediaPath && watchDirs.push(opts.sourceMediaPath);
@@ -59,9 +35,9 @@ export class HotUtils {
 			.on('unlink', path => this.debounceWatchCallBack(path, emitter))
 			.on('add', path => this.debounceWatchCallBack(path, emitter))
 			.on('change', path => this.debounceWatchCallBack(path, emitter))
-			.on('error', err => console.error(err));
+			.on('error', err => emitter.log.error('hot', err.message));
 
-		watchDirs.forEach(dir => console.log(`[hot] watching dir "${dir}".`));
+		watchDirs.forEach(dir => emitter.log.message('hot', `watching dir "${dir}"`, true));
 		return watcher;
 	}
 
@@ -86,5 +62,34 @@ export class HotUtils {
 				}
 			})();
 		return json as false | { [key: string]: unknown };
+	}
+
+	protected logger(
+		context: logContexts,
+		message: string,
+		type: 'log' | 'warn' | 'error',
+		prefix = false
+	) {
+		message = message.trim();
+		let dashLen = 110;
+		let cont: string;
+
+		switch (type) {
+		case 'log':
+			cont = `[${context}]`;
+			break;
+		case 'warn':
+			cont = `[${context}][warning]`;
+			break;
+		case 'error':
+			cont = `[${context}][error]`;
+		}
+		
+		const messLen = message.length + cont.length;
+		(messLen >= dashLen)? dashLen = 1 : dashLen = dashLen - messLen; 
+
+		message = prefix ? `${'-'.repeat(dashLen)} ${message}\n` : message;
+		prefix && (cont = `\n${cont}`);
+		console[type](cont, message);
 	}
 }

@@ -18,8 +18,6 @@ app.options.addReader(new td.ArgumentsReader(300));
 
 app.bootstrap();
 
-console.log('getOptions:',getOptions?'true':'false');
-
 if (getOptions) {
 	console.log(JSON.stringify(app.options['_values']));
 } else {
@@ -30,8 +28,7 @@ if (getOptions) {
 	// Only do a quick build to update static assets
 	process.stdin.on('data', (message: Buffer | string) => {
 		message = message.toString('utf8').trim();
-		console.log(`---------------------------------------- ${message}`);
-		if (message === 'buildDocs') buildDocs(app, project, targetDocDir);
+		(message === 'buildDocs') && buildDocs(app, project, targetDocDir);
 	});
 }
 

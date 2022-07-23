@@ -43,11 +43,11 @@ export class Hot extends Spawn {
 		return new Promise(resolve => {
 
 			this.emitter.on('tsc.compile.done', () => {
-				console.log('[hot]---------------------------------------- tsc compiled in watch mode');
+				this.emitter.log.message('hot', 'tsc compiled in watch mode', true);
 				this.tdoc = this.spawnTsDoc(this.emitter, this.opts, new AbortController(), tsdocRunner, this.tdocBuildCount);
 			});
 			this.emitter.once('tdoc.build.init', () => {
-				console.log('[hot]---------------------------------------- initial documents built');
+				this.emitter.log.message('hot', 'initial documents built', true);
 				!testing && browser.init({ server: this.opts.targetDocsPath }); //cannot get Mocha/sinon to stub browserSync
 
 				this.fileWatcher = this.startWatchingFiles(this.opts, this.emitter);
@@ -66,10 +66,10 @@ export class Hot extends Spawn {
 			this.emitter.on('files.changed', path => {
 				
 				if (path.startsWith(this.opts.sourceMediaPath)) {
-					console.log('[hot]---------------------------------------- change asset');
+					this.emitter.log.message('hot', 'change asset', true);
 					this.tdoc.process.stdin.write('buildDocs');
 				} else {
-					console.log('[hot]---------------------------------------- change source');
+					this.emitter.log.message('hot', 'change source', true);
 					this.tdocBuildCount++;
 					this.tdoc.controller.abort();
 					this.tdoc = this.spawnTsDoc(this.emitter, this.opts, new AbortController(), tsdocRunner, this.tdocBuildCount);
@@ -87,6 +87,7 @@ export class Hot extends Spawn {
 				this.opts.tdoc = opts;
 				this.opts.tsc && this.emitter.options.ready();
 			});
+			this.emitter.on('log.message', (message, context, type, prefix) => this.logger(message, context, type, prefix));
 		});
 	}
 

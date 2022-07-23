@@ -5,6 +5,7 @@
  * @module API
  */
 import EventEmitter from 'node:events';
+import { logContexts } from '../types';
 
 /**
  * Provides a API space by extension of the standard Node event emitter.
@@ -44,5 +45,15 @@ export class HotEmitter extends EventEmitter {
 			tdoc: (opts: {[key:string]: unknown}) => this.emit('options.set.tdoc', opts)
 		},
 		ready: () => this.emit('options.ready')
+	};
+	log = {
+		message: (context: logContexts, mess: string, prefix?: boolean) => this.emit('log.message', context, mess, 'log', prefix),
+		warning: (context: logContexts, mess: string, prefix?: boolean) => this.emit('log.message', context, mess, 'warn', prefix),
+		error: (context: logContexts, mess: string, prefix?: boolean) => this.emit('log.message', context, mess, 'error', prefix)
+	};
+	tests = {
+		assert: {
+			done: (key: string, value: unknown) => this.emit('tests.assert.done', key, value)
+		}
 	};
 }
