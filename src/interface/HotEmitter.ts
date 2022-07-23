@@ -32,13 +32,6 @@ export class HotEmitter extends EventEmitter {
 		/** notifies of a file change */
 		changed: (path: string) => this.emit('files.changed', path)
 	};
-	/** the http server / client */
-	http = {
-		server: {
-			/** notifies that the context for starting the server / client is ready */
-			ready: (httpPath: string) => this.emit('http.server.ready', httpPath)
-		}
-	};
 	options = {
 		set: {
 			tsc: (opts: {[key:string]: unknown}) => this.emit('options.set.tsc', opts),
@@ -50,10 +43,5 @@ export class HotEmitter extends EventEmitter {
 		message: (context: logContexts, mess: string, prefix?: boolean) => this.emit('log.message', context, mess, 'log', prefix),
 		warning: (context: logContexts, mess: string, prefix?: boolean) => this.emit('log.message', context, mess, 'warn', prefix),
 		error: (context: logContexts, mess: string, prefix?: boolean) => this.emit('log.message', context, mess, 'error', prefix)
-	};
-	tests = {
-		assert: {
-			done: (key: string, value: unknown) => this.emit('tests.assert.done', key, value)
-		}
 	};
 }
