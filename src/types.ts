@@ -14,12 +14,7 @@ export interface hotOptions {
 	 * Typically `./dist`.  
 	 * If not specified, the default tsc `outDir` will be used.
 	*/
-	sourceDist?: string,
-	/**
-	 * The relative path to the folder for built documentation.  
-	 * If not specified, will default to the target 'out' directory in the `targetCwd` space.
-	 */
-	targetDoc?: string
+	sourceDist?: string
 }
 
 export type allOptions = {
@@ -32,7 +27,6 @@ export type allOptions = {
 	targetCwdPath?: string;
 	sourceMediaPath?: string;
 	sourceDistPath?: string;
-	targetDocsPath?: string;
 }
 
 export interface spawnedProcess {

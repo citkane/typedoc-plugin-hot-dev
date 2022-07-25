@@ -8,7 +8,6 @@ import td = require('typedoc');
 
 const hotArgs = process.argv.slice(2);
 const getOptions = (hotArgs[0] === 'getOptions');
-const targetDocDir = hotArgs[0];
 
 const app = new td.Application();
 
@@ -21,12 +20,13 @@ if (getOptions) {
 	console.log(JSON.stringify(app.options['_values']));
 } else {
 	const project = app.convert();
-	buildDocs(app, project, targetDocDir);
+	const out = app.options.getValue('out');
+	buildDocs(app, project, out);
 
 	// Only do a quick build to update static assets
 	process.stdin.on('data', (message: Buffer | string) => {
 		message = message.toString('utf8').trim();
-		(message === 'buildDocs') && buildDocs(app, project, targetDocDir);
+		(message === 'buildDocs') && buildDocs(app, project, out);
 	});
 }
 
@@ -35,12 +35,12 @@ if (getOptions) {
  * This provides a shortcut for ewhen media updates and does not require a full document rebuild.
  * @param app 
  * @param project 
- * @param targetDocDir 
+ * @param out
  * 
  * @function
  */
-function buildDocs(app, project, targetDocDir: string): void {
-	app.generateDocs(project, targetDocDir)
+function buildDocs(app, project, out: string): void {
+	app.generateDocs(project, out)
 		.then(() => {
 			console.log('build done');
 		})

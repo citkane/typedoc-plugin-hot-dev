@@ -32,9 +32,6 @@ Options can be passed into `init(options)` or defined in `typedoc.json` under th
   The relative path to the root of the project that you want to build documentation for.  
   Defaults to `./` (ie. documentation for the theme you are developing).  
   \* See Footnote
-- **"targetDoc"**  
-  Relative path to where hot-dev should put output documentation.  
-  Defaults to `./doc`
 
 **Footnote**  
 When targeting an external project for hot previewing (ie. not the documentation for the theme you are developing), at that location you will install the theme you are developing as so:

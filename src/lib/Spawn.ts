@@ -84,10 +84,9 @@ export class Spawn extends HotUtils {
 		const { signal } = controller;
 		const tsdoc = spawn(
 			command,
-			[path.join(__dirname, '../spawned'), opts.targetDocsPath],
+			[path.join(__dirname, '../spawned')],
 			{ cwd: opts.targetCwdPath, signal }
 		);
-		//tsdoc.stdin.write(`build.${opts.targetDocsPath}`);
 
 		tsdoc.on('error', (err: Error) => {
 			(err.message !== 'The operation was aborted') && emitter.log.error('tdoc', err.message);

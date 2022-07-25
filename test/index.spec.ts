@@ -16,17 +16,16 @@ const tempFolder = path.normalize('./.tmp');
 const sourcDistDir = path.normalize('./dist');
 const sourceDistPath = path.join(cwd,  sourcDistDir);
 const sourceMediaPath = path.join(cwd, tempFolder, 'media');
-const targetDocDir = path.join(tempFolder, 'docs');
-const targetDocPath = path.join(cwd,targetDocDir);
+const targetDocDir = path.normalize('./docs');
+const targetDocPath = path.join(cwd, targetDocDir);
 const stubSrcFile = path.join(cwd, '/src/teststubfile.ts');
 const stubDistFile = path.join(sourceDistPath, 'teststubfile.js');
 const stubSrcMediaFile = path.join(sourceMediaPath, '/teststubfile.css');
-const stubDocMediaFile = path.join(cwd, targetDocDir, './media/teststubfile.css');
+const stubDocMediaFile = path.join(targetDocPath, './media/teststubfile.css');
 
 const testingOptions: hotOptions = {
 	targetCwd: path.normalize('./'),
-	sourceDist: sourcDistDir,
-	targetDoc: targetDocDir
+	sourceDist: sourcDistDir
 }
 
 describe('Plugin loading and environment smoke tests', function(){
@@ -73,11 +72,10 @@ describe('Unit testing for typedoc-plugin-hot-dev', function () {
 	it('creates and transforms options', function () {
 		this.opts = this.hot.parseOptions(this.opts);
 
-		assert.hasAnyKeys(this.opts, ['targetCwdPath','sourceMediaPath','targetDocsPath'], 'did not generate root keys')
+		assert.hasAnyKeys(this.opts, ['targetCwdPath','sourceMediaPath'], 'did not generate root keys')
 		assert.equal(stripTrailing(this.opts.targetCwdPath), stripTrailing(cwd), 'did not resolve the path for "targetCwd" correctly')
 		assert.equal(stripTrailing(this.opts.sourceMediaPath), stripTrailing(sourceMediaPath), 'did not resolve the path for "sourceMediaPath" correctly')
 		assert.equal(stripTrailing(this.opts.sourceDistPath), stripTrailing(sourceDistPath), 'did not resolve the path for "sourcDistPath" correctly')
-		assert.equal(stripTrailing(this.opts.targetDocsPath), stripTrailing(targetDocPath), 'did not resolve the path for "targetDocsPath" correctly')
 
 	});
 })
