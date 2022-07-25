@@ -24,7 +24,8 @@ export function load(app: Application) {
 			type: ParameterType.Mixed,
 			defaultValue: {
 				targetCwd: './',
-				sourceDist: './dist'
+				sourceDist: './hot/dist',
+				targetDoc: './hot/doc'
 			},
 		});
 }
