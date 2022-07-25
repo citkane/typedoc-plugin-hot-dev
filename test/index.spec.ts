@@ -4,7 +4,7 @@ import fs from 'fs-extra';
 import path, { resolve } from 'path';
 import sinon from 'sinon';
 import { assert } from 'chai';
-import { init, getHotOptions } from '../src/index';
+import { getHotOptions } from '../src/index';
 import { Hot } from '../src/lib/Hot';
 import { allOptions, hotOptions } from '../src/types';
 import { HotEmitter } from '../src/interface/HotEmitter';

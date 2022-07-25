@@ -15,7 +15,6 @@
 	"externalPattern": ["**/node_modules/**"],
 	"excludeExternals": true,
 	"logLevel": "Verbose",
-	"plugin": ["./dist/index.js"],
 	"hot-dev": {
 		"sourceDist": "./dist",
 		"targetCwd": "./",
