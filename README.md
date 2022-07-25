@@ -2,13 +2,13 @@
 This is a helper for [TypeDoc](https://typedoc.org/) theme development.  
 
 Think 'create-react-app' live server - just for TypeDoc.
-
-
+- Quick compile for media asset updates (eg. css)
+- Works with all typedoc entrypoint strategies.
 
 #### Hot development usage
 ```bash
 npm i -D typedoc-plugin-hot-dev
-npx hot-dev
+npx hot-dev #please set up options first
 ```
 #### Programatic usage
 ```ts
@@ -24,8 +24,9 @@ init([, options]);
 Options can be passed into `init(options)` or defined in `typedoc.json` under the key of `"hot-dev":{...}`
 
 - **"sourceDist"**  
-  The relative path to where hot-dev should put your theme's tsc compiled code.  
-  Defaults to `./dist`.
+  The relative path to the root of your theme's tsc compiled code.  
+  Defaults to `./dist`.  
+  Hot-dev watches here for source changes, so **you must defined it if not as per the default.**
 - **"targetCwd"**  
   The relative path to the root of the project that you want to build documentation for.  
   Defaults to `./` (ie. documentation for the theme you are developing).  
