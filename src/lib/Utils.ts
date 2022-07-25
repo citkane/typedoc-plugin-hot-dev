@@ -14,11 +14,11 @@ export class HotUtils {
 		this.timer;
 	}
 
-	protected parseOptions(opts: allOptions): allOptions {
+	protected parseOptions(opts: allOptions, mediaPath): allOptions {
 
 		const cwd = path.normalize(process.cwd());
 		opts.targetCwdPath = path.normalize(path.join(cwd, opts.hot.targetCwd));
-		opts.sourceMediaPath = path.normalize(opts.tdoc.media as string);
+		opts.sourceMediaPath = mediaPath ? path.normalize(mediaPath) : null;
 		opts.targetDocsPath = opts.hot.targetDoc ? path.join(cwd, opts.hot.targetDoc) : path.normalize(opts.tdoc.out as string);
 
 		const distPath = opts.hot.sourceDist ? opts.hot.sourceDist : opts.tsc.compilerOptions['outDir'];

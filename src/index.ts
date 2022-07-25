@@ -32,14 +32,14 @@ export function load(app: Application) {
 
 export function init(overOpts: hotOptions = {}) {
 
-	const hotOptions = getHotOptions();
+	const opts = getHotOptions();
 	Object.keys(overOpts).forEach(key => {
-		hotOptions[key] && (hotOptions[key]= overOpts[key]);
+		opts.defaultOpts[key] && (opts.defaultOpts[key]= overOpts[key]);
 	});
-	return new Hot(hotOptions).init();
+	return new Hot(opts.defaultOpts).init(opts.mediaPath);
 }
 
-export function getHotOptions(): hotOptions {
+export function getHotOptions(): { defaultOpts: hotOptions, mediaPath: string } {
 	const app = new TypeDoc.Application();
 	load(app);
 	const defaultOpts = app.options.getValue('hot-dev');
@@ -49,5 +49,6 @@ export function getHotOptions(): hotOptions {
 	Object.keys(options).forEach(key => {
 		defaultOpts[key] && (defaultOpts[key] = options[key]);
 	});
-	return defaultOpts;
+	const mediaPath = app.options.getValue('media');
+	return {defaultOpts, mediaPath};
 }

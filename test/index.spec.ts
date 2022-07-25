@@ -16,8 +16,8 @@ const tempFolder = path.normalize('./.tmp');
 const sourcDistDir = path.normalize('./dist');
 const sourceDistPath = path.join(cwd,  sourcDistDir);
 const sourceMediaPath = path.join(cwd, tempFolder, 'media');
-const targetDocDir = path.join(tempFolder, 'docs');
-const targetDocPath = path.join(cwd,targetDocDir);
+const targetDocDir = path.normalize('./docs');
+const targetDocPath = path.join(cwd, targetDocDir);
 const stubSrcFile = path.join(cwd, '/src/teststubfile.ts');
 const stubDistFile = path.join(sourceDistPath, 'teststubfile.js');
 const stubSrcMediaFile = path.join(sourceMediaPath, '/teststubfile.css');
@@ -36,8 +36,9 @@ describe('Plugin loading and environment smoke tests', function(){
 	})
 	it('loads options from "hot-dev" custom options', function(){
 		this.tdocApp = new Application();
-		const hotOpts = getHotOptions();
-		assert.hasAllKeys(hotOpts , testingOptions)
+		const opts = getHotOptions();
+		assert.hasAllKeys(opts, ['defaultOpts', 'mediaPath'])
+		assert.hasAllKeys(opts.defaultOpts , testingOptions)
 	})
 })
 
@@ -71,7 +72,7 @@ describe('Unit testing for typedoc-plugin-hot-dev', function () {
 		this.hot.getTdocOptions(this.emitter, testingOptions, new AbortController(), 'ts-node');
 	})
 	it('creates and transforms options', function () {
-		this.opts = this.hot.parseOptions(this.opts);
+		this.opts = this.hot.parseOptions(this.opts, sourceMediaPath);
 
 		assert.hasAnyKeys(this.opts, ['targetCwdPath','sourceMediaPath','targetDocsPath'], 'did not generate root keys')
 		assert.equal(stripTrailing(this.opts.targetCwdPath), stripTrailing(cwd), 'did not resolve the path for "targetCwd" correctly')
@@ -157,7 +158,12 @@ describe('End to End test for typedoc-plugin-hot-dev', function () {
 
 	it('starts a tsc compiler in watch mode and runs the initial doc build', async function () {
 		this.timeout(30000);
-		({tsc: this.tsc, tdoc: this.tdoc, fileWatcher: this.fileWatcher, httpPath: this.httpPath} = await new Hot(testingOptions).init('ts-node'));
+		({
+			tsc: this.tsc,
+			tdoc: this.tdoc,
+			fileWatcher: this.fileWatcher,
+			httpPath: this.httpPath
+		} = await new Hot(testingOptions).init(sourceMediaPath, 'ts-node'));
 		
 		assert.exists(this.tsc.controller.abort);
 		assert.exists(this.tdoc.controller.abort);
