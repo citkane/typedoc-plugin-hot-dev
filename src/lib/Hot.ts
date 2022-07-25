@@ -35,7 +35,7 @@ export class Hot extends Spawn {
 		};
 	}
 
-	public async init(tsdocRunner: runners = 'node'): Promise<{ tsc, tdoc, fileWatcher, httpPath }> {
+	public async init(mediaPath: string, tsdocRunner: runners = 'node'): Promise<{ tsc, tdoc, fileWatcher, httpPath }> {
 
 		this.getTscConfig(this.emitter);
 		this.getTdocOptions(this.emitter, this.opts.hot, new AbortController(), tsdocRunner);
@@ -75,7 +75,7 @@ export class Hot extends Spawn {
 				}
 			});
 			this.emitter.on('options.ready', () => {
-				this.opts = this.parseOptions(this.opts);
+				this.opts = this.parseOptions(this.opts, mediaPath);
 				this.tsc = this.spawnTscWatch(this.emitter, new AbortController(), this.opts);
 			});
 			this.emitter.on('options.set.tsc', opts => {

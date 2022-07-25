@@ -35,8 +35,9 @@ describe('Plugin loading and environment smoke tests', function(){
 	})
 	it('loads options from "hot-dev" custom options', function(){
 		this.tdocApp = new Application();
-		const hotOpts = getHotOptions();
-		assert.hasAllKeys(hotOpts , testingOptions)
+		const opts = getHotOptions();
+		assert.hasAllKeys(opts, ['defaultOpts', 'mediaPath'])
+		assert.hasAllKeys(opts.defaultOpts , testingOptions)
 	})
 })
 
@@ -70,7 +71,7 @@ describe('Unit testing for typedoc-plugin-hot-dev', function () {
 		this.hot.getTdocOptions(this.emitter, testingOptions, new AbortController(), 'ts-node');
 	})
 	it('creates and transforms options', function () {
-		this.opts = this.hot.parseOptions(this.opts);
+		this.opts = this.hot.parseOptions(this.opts, sourceMediaPath);
 
 		assert.hasAnyKeys(this.opts, ['targetCwdPath','sourceMediaPath'], 'did not generate root keys')
 		assert.equal(stripTrailing(this.opts.targetCwdPath), stripTrailing(cwd), 'did not resolve the path for "targetCwd" correctly')
@@ -155,7 +156,12 @@ describe('End to End test for typedoc-plugin-hot-dev', function () {
 
 	it('starts a tsc compiler in watch mode and runs the initial doc build', async function () {
 		this.timeout(30000);
-		({tsc: this.tsc, tdoc: this.tdoc, fileWatcher: this.fileWatcher, httpPath: this.httpPath} = await new Hot(testingOptions).init('ts-node'));
+		({
+			tsc: this.tsc,
+			tdoc: this.tdoc,
+			fileWatcher: this.fileWatcher,
+			httpPath: this.httpPath
+		} = await new Hot(testingOptions).init(sourceMediaPath, 'ts-node'));
 		
 		assert.exists(this.tsc.controller.abort);
 		assert.exists(this.tdoc.controller.abort);
