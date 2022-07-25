@@ -1,8 +1,10 @@
 src
-testss
+test
 tsconfig.json
-typedoc-hot-dev*
+typedoc.json
 docs
 mocharc.json
 .tmp
+.github
 teststubfile.*
+*.tgz

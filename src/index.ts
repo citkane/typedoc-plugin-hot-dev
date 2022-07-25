@@ -17,7 +17,7 @@ import { hotOptions } from './types';
  * @param app The typedoc application
  */
 export function load(app: Application) {
-	!app.options.getDeclaration('hot-dev') &&
+	!app.options['_values']['hot-dev'] &&
 		app.options.addDeclaration({
 			help: '[hot-dev] Options for typedoc-plugin-hot-dev',
 			name: 'hot-dev',
@@ -29,16 +29,16 @@ export function load(app: Application) {
 		});
 }
 
-export function init(overOpts: hotOptions) {
-	const hotOptions = getHotOptions();
+export function init(overOpts: hotOptions = {}) {
+	const app = new TypeDoc.Application();
+	load(app);
+	const hotOptions = getHotOptions(app);
 	Object.keys(overOpts).forEach(key => (hotOptions[key] = overOpts[key]));
 	return new Hot(hotOptions).init();
 }
 
-export function getHotOptions(): hotOptions {
-	const app = new TypeDoc.Application();
-	load(app);
+export function getHotOptions(app): hotOptions {
 	app.options.addReader(new TypeDoc.TypeDocReader());
 	app.bootstrap();
-	return app.options['_values']['hot-dev'];
+	return app.options.getValue('hot-dev');
 }

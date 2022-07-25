@@ -1,6 +1,6 @@
 {
 	"name": "typedoc-plugin-hot-dev",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"description": "Provides a Typedoc hot theme development environment",
 	"main": "./dist/index.js",
 	"scripts": {
@@ -31,8 +31,7 @@
 		"node": ">=16.0.0"
 	},
 	"bin": {
-		"typedoc-plugin-hot-dev": "./src/bin/hot.js",
-		"hot-dev": "./src/bin/hot.js"
+		"hot-dev": "./dist/bin/hot.js"
 	},
 	"dependencies": {
 		"browser-sync": "^2.27.10",
@@ -57,11 +56,11 @@
 		"sinon": "^14.0.0",
 		"source-map-support": "^0.5.21",
 		"ts-node": "^10.9.1",
-		"typedoc": "^0.23.8",
+		"typedoc": "^0.23.9",
 		"typescript": "^4.7.4"
 	},
 	"peerDependencies": {
-		"typedoc": "^0.23.0"
+		"typedoc": "^0.23"
 	},
 	"mocha": {
 		"extension": [

@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { init } = require('../../dist/index.js');
+import { init } from '../index';
 
 init().then(() => {
 	clearInterval(hold);

@@ -29,18 +29,18 @@ Options can be passed into `init(options)` or defined in `typedoc.json` under th
 - **"targetCwd"**  
   The relative path to the root of the project that you want to build documentation for.  
   Defaults to `./` (ie. documentation for the theme you are developing).  
-  \* See note at end
+  \* See Footnote
 - **"targetDoc"**  
   Relative path to where hot-dev should put output documentation.  
   Defaults to `./doc`
 
-**Note**  
-When targeting an external project (ie. not the theme you are developing), at that location you will install the theme you are developing as so:
+**Footnote**  
+When targeting an external project for hot previewing (ie. not the documentation for the theme you are developing), at that location you will install the theme you are developing as so:
 ```
 npm install ../path/to/typedoc-theme-yourtheme
 ```
 
-This will create a symlink in ./node_modules,  and cause peerdependies to break. [This is an issue with node](https://github.com/npm/npm/issues/5875).
+This will create a symlink in ./node_modules of your theme project, but will cause peerdependies to fail. [This is an issue with node](https://github.com/npm/npm/issues/5875).
 
 To work around this from your theme directory directory:
 ```
