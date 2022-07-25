@@ -31,8 +31,14 @@
 		"node": ">=16.0.0"
 	},
 	"bin": {
-		"typedoc-plugin-hot-dev": "./bin/hot.js",
-		"hot-dev": "./bin/hot.js"
+		"typedoc-plugin-hot-dev": "./src/bin/hot.js",
+		"hot-dev": "./src/bin/hot.js"
+	},
+	"dependencies": {
+		"browser-sync": "^2.27.10",
+		"chokidar": "^3.5.3",
+		"fs-extra": "^10.1.0",
+		"yargs": "^17.5.1"
 	},
 	"devDependencies": {
 		"@types/browser-sync": "^2.26.3",
@@ -44,11 +50,8 @@
 		"@types/wtfnode": "^0.7.0",
 		"@typescript-eslint/eslint-plugin": "^5.30.6",
 		"@typescript-eslint/parser": "^5.30.6",
-		"browser-sync": "^2.27.10",
 		"chai": "^4.3.6",
-		"chokidar": "^3.5.3",
 		"eslint": "^8.20.0",
-		"fs-extra": "^10.1.0",
 		"mocha": "^10.0.0",
 		"nyc": "^15.1.0",
 		"sinon": "^14.0.0",
@@ -61,7 +64,9 @@
 		"typedoc": "^0.23.0"
 	},
 	"mocha": {
-		"extension": ["ts"],
+		"extension": [
+			"ts"
+		],
 		"file": "./test/index.spec.ts",
 		"require": [
 			"ts-node/register/transpile-only",
