@@ -1,5 +1,4 @@
 import { ChildProcessWithoutNullStreams } from 'node:child_process';
-import path from 'node:path';
 
 /**
  * The development options which can be overridden by "hot-dev" in the "typedoc.json" config file.
