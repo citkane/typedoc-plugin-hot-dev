@@ -57,7 +57,6 @@ export class Spawn extends HotUtils {
 		tsc.stdout.on('data', (data: Buffer) => {
 			const message = data.toString('utf8').trim();
 			const tscOpts = this.isJson(message) as { compilerOptions: { outDir } };
-			console.log(tscOpts);
 			!tscOpts && (() => { throw new Error('could not get tsc options'); })();
 			tsc.kill(0);
 			emitter.options.set.tsc(tscOpts);

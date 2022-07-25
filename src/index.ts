@@ -33,12 +33,9 @@ export function load(app: Application) {
 export function init(overOpts: hotOptions = {}) {
 
 	const hotOptions = getHotOptions();
-	
 	Object.keys(overOpts).forEach(key => {
 		hotOptions[key] && (hotOptions[key]= overOpts[key]);
 	});
-
-	console.log(hotOptions);
 	return new Hot(hotOptions).init();
 }
 
