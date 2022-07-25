@@ -1,44 +1,41 @@
-## Typedoc-Plugin-Hot-Dev
+## :fire: Typedoc-Plugin-Hot-Dev
 This is a helper for [TypeDoc](https://typedoc.org/) theme development.  
 
 Think 'create-react-app' live server - just for TypeDoc.
 
 
 
-#### Hot development setup
+#### Hot development usage
 ```bash
-npm i -D typedoc-plugin-hot-dev //to be published soon
+npm i -D typedoc-plugin-hot-dev
+npx hot-dev
 ```
-then from a build script:
+#### Programatic usage
 ```ts
-import * as hot from 'typedoc-hot dev';
+import {init} from 'typedoc-hot-plugin-hot-dev';
 
-// do your pre-processing, eg sass, etc.
+// do your pre-processing logic, sass, etc.
 
-hot.init([, tsc options]);
+init([, options]);
 
 ```
 
-By default, the documentation for the current project (your theme) will be built. Typedoc will need to be configured for this context.
+#### Options
+Options can be passed into `init(options)` or defined in `typedoc.json` under the key of `"hot-dev":{...}`
 
-You can configure the project to be documented with your theme from typedoc.json:
+- **"sourceDist"**  
+  The relative path to where hot-dev should put your theme's tsc compiled code.  
+  Defaults to `./dist`.
+- **"targetCwd"**  
+  The relative path to the root of the project that you want to build documentation for.  
+  Defaults to `./` (ie. documentation for the theme you are developing).  
+  \* See note at end
+- **"targetDoc"**  
+  Relative path to where hot-dev should put output documentation.  
+  Defaults to `./doc`
 
-```jsonc
-{
-	//typedoc options
-	"typedoc-hot-dev": {
-		"targetDocDir": "docs",
-		"targetCwdPath": "../some/other/project",
-		"sourceDistPath": "./dist",
-		"sourceAssetsPath": "./dist/assets"		
-	}
-}
-```
-The target project must have typedoc correctly set up, and `targetDocDir` should correspond to the `out` of the external project.
-
-**Note**
-
-When targeting an external project for hot development, from that project, you will probeebely install the theme you are developing as so:
+**Note**  
+When targeting an external project (ie. not the theme you are developing), at that location you will install the theme you are developing as so:
 ```
 npm install ../path/to/typedoc-theme-yourtheme
 ```
