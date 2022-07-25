@@ -45,6 +45,7 @@ describe('Plugin loading and environment smoke tests', function(){
 
 describe('Unit testing for typedoc-plugin-hot-dev', function () {
 	before(function () {
+		this.timeout(10000);
 		cleanDirs(['./.tmp']);
 		this.emitter = new HotEmitter();
 		this.opts = {
@@ -53,6 +54,7 @@ describe('Unit testing for typedoc-plugin-hot-dev', function () {
 		this.hot = new Hot(testingOptions);
 	});
 	it('retrieves spawned tsc options', function(done){
+		this.timeout(10000);
 		this.emitter.on('options.set.tsc', opts => {
 			assert.hasAnyKeys(opts, ['compilerOptions']);
 			this.opts.tsc = opts;
@@ -61,6 +63,7 @@ describe('Unit testing for typedoc-plugin-hot-dev', function () {
 		this.hot.getTscConfig(this.emitter);
 	})
 	it('retrieves spawned tdoc options', function(done){
+		this.timeout(10000);
 		this.emitter.on('options.set.tdoc', opts => {
 			assert.hasAnyKeys(opts, ['out']);
 			this.opts.tdoc = opts;
@@ -92,7 +95,6 @@ describe('Functional testing for typedoc-plugin-hot-dev', function () {
 	});
 	it(`spawns a tsc process that compiles to the "${sourceDistPath}"`, function (done) {
 		this.timeout(10000);
-		//const spawnTscWatch = (<any>this.hot).spawnTscWatch
 		this.tsc = this.hot.spawnTscWatch(this.emitter, new AbortController(),{sourceDistPath});
 
 		assert.exists(this.tsc.controller.abort, 'spawn did not return a controller');
@@ -109,6 +111,7 @@ describe('Functional testing for typedoc-plugin-hot-dev', function () {
 
 	});
 	it(`watches the "${cwd}/src" folder and compiles on change`, async function(){
+		this.timeout(10000);
 		fs.createFileSync(stubSrcFile);
 		const hasWatched = await waitForFile(stubDistFile);
 		cleanDirs([stubSrcFile]);
@@ -119,7 +122,6 @@ describe('Functional testing for typedoc-plugin-hot-dev', function () {
 	it(`spawns a typedoc process that builds docs to the "${targetDocDir}" folder`, async function () {
 		this.timeout(10000);
 		const allOps = await getAllOpts(); 
-		
 		const startController = new AbortController();
 		const tdoc = this.hot.spawnTsDoc(this.emitter, allOps, startController, 'ts-node', 0);
 		assert.exists(tdoc.controller.abort, 'spawn did not return a controller');
@@ -135,7 +137,7 @@ describe('Functional testing for typedoc-plugin-hot-dev', function () {
 })
 
 describe('End to End test for typedoc-plugin-hot-dev', function () {
-	this.timeout(10000);
+	
 	
 	before(async function () {
 		cleanDirs([tempFolder, stubSrcFile])
@@ -155,7 +157,7 @@ describe('End to End test for typedoc-plugin-hot-dev', function () {
 	})
 
 	it('starts a tsc compiler in watch mode and runs the initial doc build', async function () {
-
+		this.timeout(10000);
 		({tsc: this.tsc, tdoc: this.tdoc, fileWatcher: this.fileWatcher, httpPath: this.httpPath} = await new Hot(testingOptions).init('ts-node'));
 		
 		assert.exists(this.tsc.controller.abort);
@@ -169,11 +171,13 @@ describe('End to End test for typedoc-plugin-hot-dev', function () {
 		setTimeout(() => done(), 100)
 	})
 	it('updates asset files on change', async function(){
+		this.timeout(10000);
 		fs.createFileSync(stubSrcMediaFile);
 		const wasUpdated = await waitForFile(stubDocMediaFile, 5000);
 		assert.isTrue(wasUpdated, 'update was not triggered on asset change');
 	});
 	it('updates source files on change', async function(){
+		this.timeout(10000);
 		fs.createFileSync(stubSrcFile);
 		const wasUpdated = await waitForFile(stubDistFile, 100000);
 		assert.isTrue(wasUpdated, 'update was not triggered on source file change');
