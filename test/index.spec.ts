@@ -120,7 +120,7 @@ describe('Functional testing for typedoc-plugin-hot-dev', function () {
 		this.tsc.process.kill(0);
 	})
 	it(`spawns a typedoc process that builds docs to the "${targetDocDir}" folder`, async function () {
-		this.timeout(10000);
+		this.timeout(30000);
 		const allOps = await getAllOpts(); 
 		const startController = new AbortController();
 		const tdoc = this.hot.spawnTsDoc(this.emitter, allOps, startController, 'ts-node', 0);
@@ -157,7 +157,7 @@ describe('End to End test for typedoc-plugin-hot-dev', function () {
 	})
 
 	it('starts a tsc compiler in watch mode and runs the initial doc build', async function () {
-		this.timeout(10000);
+		this.timeout(30000);
 		({tsc: this.tsc, tdoc: this.tdoc, fileWatcher: this.fileWatcher, httpPath: this.httpPath} = await new Hot(testingOptions).init('ts-node'));
 		
 		assert.exists(this.tsc.controller.abort);
@@ -177,7 +177,7 @@ describe('End to End test for typedoc-plugin-hot-dev', function () {
 		assert.isTrue(wasUpdated, 'update was not triggered on asset change');
 	});
 	it('updates source files on change', async function(){
-		this.timeout(10000);
+		this.timeout(30000);
 		fs.createFileSync(stubSrcFile);
 		const wasUpdated = await waitForFile(stubDistFile, 100000);
 		assert.isTrue(wasUpdated, 'update was not triggered on source file change');
