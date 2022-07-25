@@ -27,10 +27,12 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: install
-        run: npm install
-      - name: test
+        uses: actions/setup-node@v3
+        with:
+          cache: 'npm'
+        run: npm ci
+      - name: test and build
         run: npm run test
-      - name: build
         run: npm run build
 
       # Runs a set of commands using the runners shell
