@@ -30,12 +30,12 @@ export class Spawn extends HotUtils {
 		controller: AbortController,
 		opts: allOptions
 	): spawnedProcess {
-
-		const tscOptions = ['--preserveWatchOutput', '--watch', '--outDir', opts.sourceDistPath];
+		let tscOptions = ['--preserveWatchOutput', '--watch'];
+		(opts.tsc.references && opts.tsc.references['length']) && (tscOptions = ['--build', ...tscOptions]);
 		const { signal } = controller;
 
 		let resolved = false;
-		const tsc = spawn('node_modules/.bin/tsc', tscOptions, { signal });
+		const tsc = spawn('npx', ['tsc', ...tscOptions], { signal });
 
 		tsc.on('error', (err: Error) => emitter.log.error('tsc', err.message.toString()));
 		tsc.stdout.on('data', (data: Buffer) => {
@@ -52,11 +52,12 @@ export class Spawn extends HotUtils {
 		
 	}
 	protected getTscConfig(emitter: HotEmitter) {
-		const tsc = spawn('node_modules/.bin/tsc', ['--showConfig']);
+		const tsc = spawn('./node_modules/.bin/tsc', ['--showConfig']);
 		tsc.on('error', (err: Error) => emitter.log.error('tsc', err.message.toString()));
 		tsc.stdout.on('data', (data: Buffer) => {
 			const message = data.toString('utf8').trim();
 			const tscOpts = this.isJson(message) as { compilerOptions: { outDir } };
+			console.log(tscOpts);
 			!tscOpts && (() => { throw new Error('could not get tsc options'); })();
 			tsc.kill(0);
 			emitter.options.set.tsc(tscOpts);

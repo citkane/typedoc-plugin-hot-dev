@@ -24,22 +24,33 @@ export function load(app: Application) {
 			type: ParameterType.Mixed,
 			defaultValue: {
 				targetCwd: './',
-				sourceDist: './hot/dist',
-				targetDoc: './hot/doc'
+				sourceDist: './dist',
+				targetDoc: './doc'
 			},
 		});
 }
 
 export function init(overOpts: hotOptions = {}) {
-	const app = new TypeDoc.Application();
-	load(app);
-	const hotOptions = getHotOptions(app);
-	Object.keys(overOpts).forEach(key => (hotOptions[key] = overOpts[key]));
+
+	const hotOptions = getHotOptions();
+	
+	Object.keys(overOpts).forEach(key => {
+		hotOptions[key] && (hotOptions[key]= overOpts[key]);
+	});
+
+	console.log(hotOptions);
 	return new Hot(hotOptions).init();
 }
 
-export function getHotOptions(app): hotOptions {
+export function getHotOptions(): hotOptions {
+	const app = new TypeDoc.Application();
+	load(app);
+	const defaultOpts = app.options.getValue('hot-dev');
 	app.options.addReader(new TypeDoc.TypeDocReader());
 	app.bootstrap();
-	return app.options.getValue('hot-dev');
+	const options = app.options.getValue('hot-dev');
+	Object.keys(options).forEach(key => {
+		defaultOpts[key] && (defaultOpts[key] = options[key]);
+	});
+	return defaultOpts;
 }

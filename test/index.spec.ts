@@ -13,7 +13,7 @@ import { Application, TSConfigReader } from 'typedoc';
 
 const cwd = path.normalize(process.cwd());
 const tempFolder = path.normalize('./.tmp');
-const sourcDistDir = path.join(tempFolder, 'dist');
+const sourcDistDir = path.normalize('./dist');
 const sourceDistPath = path.join(cwd,  sourcDistDir);
 const sourceMediaPath = path.join(cwd, tempFolder, 'media');
 const targetDocDir = path.join(tempFolder, 'docs');
@@ -22,7 +22,6 @@ const stubSrcFile = path.join(cwd, '/src/teststubfile.ts');
 const stubDistFile = path.join(sourceDistPath, 'teststubfile.js');
 const stubSrcMediaFile = path.join(sourceMediaPath, '/teststubfile.css');
 const stubDocMediaFile = path.join(cwd, targetDocDir, './media/teststubfile.css');
-const stubDocIndexfile = path.join(cwd, targetDocDir, './index.html');
 
 const testingOptions: hotOptions = {
 	targetCwd: path.normalize('./'),
@@ -95,7 +94,7 @@ describe('Functional testing for typedoc-plugin-hot-dev', function () {
 	});
 	it(`spawns a tsc process that compiles to the "${sourceDistPath}"`, function (done) {
 		this.timeout(10000);
-		this.tsc = this.hot.spawnTscWatch(this.emitter, new AbortController(),{sourceDistPath});
+		this.tsc = this.hot.spawnTscWatch(this.emitter, new AbortController(),{sourceDistPath, tsc:{}, tdoc: {}});
 
 		assert.exists(this.tsc.controller.abort, 'spawn did not return a controller');
 		assert.isObject(this.tsc.process, 'spawn did not return a process object');
