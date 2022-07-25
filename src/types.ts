@@ -10,17 +10,17 @@ export interface hotOptions {
 	 * The relative path to the target project directory from which documentation is to be built.  
 	 * If this is not specified, it will be the actual theme itself, ie './'
 	*/
-	targetCwd: string,
+	targetCwd?: string,
 	/**The relative path to the directory for compiled code.  
 	 * Typically `./dist`.  
 	 * If not specified, the default tsc `outDir` will be used.
 	*/
-	sourceDist: string,
+	sourceDist?: string,
 	/**
 	 * The relative path to the folder for built documentation.  
 	 * If not specified, will default to the target 'out' directory in the `targetCwd` space.
 	 */
-	targetDoc: string
+	targetDoc?: string
 }
 
 export type allOptions = {
