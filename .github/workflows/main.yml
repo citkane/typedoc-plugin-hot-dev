@@ -30,7 +30,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           cache: 'npm'
-        run: npm ci
+      - run: npm ci
       - name: test and build
         run: |
           npm run test
