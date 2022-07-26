@@ -4,12 +4,11 @@ import fs from 'fs-extra';
 import path, { resolve } from 'path';
 import sinon from 'sinon';
 import { assert } from 'chai';
-import { getHotOptions } from '../src/index';
 import { Hot } from '../src/lib/Hot';
-import { allOptions, hotOptions } from '../src/types';
+import { hotOptions } from '../src/types';
 import { HotEmitter } from '../src/interface/HotEmitter';
 import { spawnSync } from 'child_process';
-import { Application, TSConfigReader } from 'typedoc';
+import { Application } from 'typedoc';
 
 const cwd = path.normalize(process.cwd());
 const tempFolder = path.normalize('./.tmp');
@@ -23,7 +22,7 @@ const stubDistFile = path.join(sourceDistPath, 'teststubfile.js');
 const stubSrcMediaFile = path.join(sourceMediaPath, '/teststubfile.css');
 const stubDocMediaFile = path.join(targetDocPath, './media/teststubfile.css');
 
-const testingOptions: hotOptions = {
+const overrideHot: hotOptions = {
 	targetCwd: path.normalize('./'),
 	sourceDist: sourcDistDir
 }
@@ -33,24 +32,15 @@ describe('Plugin loading and environment smoke tests', function(){
 		this.timeout(10000);
 		assert.doesNotThrow(() => spawnSync('npx', ['tsc'], {cwd}));
 	})
-	it('loads options from "hot-dev" custom options', function(){
-		this.tdocApp = new Application();
-		const opts = getHotOptions();
-		assert.hasAllKeys(opts, ['defaultOpts', 'mediaPath'])
-		assert.hasAllKeys(opts.defaultOpts , testingOptions)
-	})
 })
 
 
 describe('Unit testing for typedoc-plugin-hot-dev', function () {
 	before(function () {
 		this.timeout(10000);
-		cleanDirs(['./.tmp']);
+		this.opts = {overrideHot};
 		this.emitter = new HotEmitter();
-		this.opts = {
-			hot: testingOptions
-		};
-		this.hot = new Hot(testingOptions);
+		this.hot = new Hot();
 	});
 	it('retrieves spawned tsc options', function(done){
 		this.timeout(10000);
@@ -68,12 +58,13 @@ describe('Unit testing for typedoc-plugin-hot-dev', function () {
 			this.opts.tdoc = opts;
 			done();
 		})
-		this.hot.getTdocOptions(this.emitter, testingOptions, new AbortController(), 'ts-node');
+		this.hot.getTdocOptions(this.emitter, overrideHot, new AbortController(), 'ts-node');
 	})
 	it('creates and transforms options', function () {
-		this.opts = this.hot.parseOptions(this.opts, sourceMediaPath);
 
-		assert.hasAnyKeys(this.opts, ['targetCwdPath','sourceMediaPath'], 'did not generate root keys')
+		this.opts = this.hot.parseOptions(this.opts, new Application());
+
+		assert.hasAnyKeys(this.opts, ['targetCwdPath','sourceMediaPath', 'targetOutPath', 'sourceDistPath'], 'did not generate root keys')
 		assert.equal(stripTrailing(this.opts.targetCwdPath), stripTrailing(cwd), 'did not resolve the path for "targetCwd" correctly')
 		assert.equal(stripTrailing(this.opts.sourceMediaPath), stripTrailing(sourceMediaPath), 'did not resolve the path for "sourceMediaPath" correctly')
 		assert.equal(stripTrailing(this.opts.sourceDistPath), stripTrailing(sourceDistPath), 'did not resolve the path for "sourcDistPath" correctly')
@@ -85,11 +76,11 @@ describe('Functional testing for typedoc-plugin-hot-dev', function () {
 
 	before(function () {
 		cleanDirs([tempFolder, stubSrcFile]);
-		this.hot = new Hot(testingOptions);
+		this.hot = new Hot();
 		this.emitter = new HotEmitter()
 	});
 	after(function () {
-		cleanDirs([tempFolder, stubSrcFile]);
+		cleanDirs([tempFolder, stubSrcFile, sourcDistDir]);
 	});
 	it(`spawns a tsc process that compiles to the "${sourceDistPath}"`, function (done) {
 		this.timeout(10000);
@@ -105,8 +96,6 @@ describe('Functional testing for typedoc-plugin-hot-dev', function () {
 			assert.isTrue(fs.existsSync(path.join(sourceDistPath, 'index.d.ts')), 'tsc did not compile "index.ts" with a "index.d.ts"');
 			done();
 		});
-
-
 	});
 	it(`watches the "${cwd}/src" folder and compiles on change`, async function(){
 		this.timeout(10000);
@@ -119,7 +108,8 @@ describe('Functional testing for typedoc-plugin-hot-dev', function () {
 	})
 	it(`spawns a typedoc process that builds docs to the "${targetDocDir}" folder`, async function () {
 		this.timeout(30000);
-		const allOps = await getAllOpts(); 
+		//const allOps = await getAllOpts(); 
+		const allOps = this.hot.parseOptions({overrideHot}, new Application());
 		const startController = new AbortController();
 		const tdoc = this.hot.spawnTsDoc(this.emitter, allOps, startController, 'ts-node', 0);
 		assert.exists(tdoc.controller.abort, 'spawn did not return a controller');
@@ -135,14 +125,12 @@ describe('Functional testing for typedoc-plugin-hot-dev', function () {
 })
 
 describe('End to End test for typedoc-plugin-hot-dev', function () {
-	
-	
 	before(async function () {
 		cleanDirs([tempFolder, stubSrcFile])
 		fs.ensureDirSync(sourceMediaPath);
 	});
 	after(function(done){
-		cleanDirs([tempFolder, stubSrcFile]);
+		cleanDirs([targetDocDir, tempFolder, stubSrcFile, sourcDistDir]);
 		this.fileWatcher.close();
 		this.tdoc.controller.abort();
 		this.tsc.controller.abort();
@@ -160,8 +148,8 @@ describe('End to End test for typedoc-plugin-hot-dev', function () {
 			tsc: this.tsc,
 			tdoc: this.tdoc,
 			fileWatcher: this.fileWatcher,
-			httpPath: this.httpPath
-		} = await new Hot(testingOptions).init(sourceMediaPath, 'ts-node'));
+			opts: this.opts
+		} = await new Hot().init(overrideHot, 'ts-node'));
 		
 		assert.exists(this.tsc.controller.abort);
 		assert.exists(this.tdoc.controller.abort);
@@ -170,7 +158,7 @@ describe('End to End test for typedoc-plugin-hot-dev', function () {
 		assert.exists(this.fileWatcher.close);
 	})
 	it('triggers the browser client at the correct path', function(done){
-		assert.equal(this.httpPath, path.join(process.cwd(), targetDocDir), 'the hot browser was not trigged');
+		assert.equal(this.opts.targetOutPath, path.join(process.cwd(), targetDocDir), 'the hot browser was not trigged');
 		setTimeout(() => done(), 100)
 	})
 	it('updates asset files on change', async function(){
@@ -208,24 +196,3 @@ function waitForFile(file: string, timeout = 3000) {
 }
 const stripTrailing = (path) => path.replace(/\/$/, '');
 
-function getAllOpts(): Promise<allOptions>{
-	return new Promise(resolve => {
-		const options: {[key: string]: unknown} = {
-			hot: testingOptions,
-
-		}
-		const emitter = new HotEmitter();
-		const hot = new Hot(testingOptions);
-		emitter.on('options.set.tsc', opts => {
-			options.tsc = opts;
-			options.tdoc && resolve((<any>hot).parseOptions(options));
-		})
-		emitter.on('options.set.tdoc', opts => {
-			options.tdoc = opts
-			options.tdoc && resolve((<any>hot).parseOptions(options));
-		});
-	
-		(<any>hot).getTscConfig(emitter);
-		(<any>hot).getTdocOptions(emitter, testingOptions, new AbortController(), 'ts-node');
-	})
-}

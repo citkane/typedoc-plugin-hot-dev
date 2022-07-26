@@ -8,7 +8,7 @@
 
 import { ParameterType, Application } from 'typedoc';
 import { Hot } from './lib/Hot';
-import TypeDoc = require('typedoc');
+
 import { hotOptions } from './types';
 
 /**
@@ -29,25 +29,6 @@ export function load(app: Application) {
 		});
 }
 
-export function init(overOpts: hotOptions = {}) {
-
-	const opts = getHotOptions();
-	Object.keys(overOpts).forEach(key => {
-		opts.defaultOpts[key] && (opts.defaultOpts[key]= overOpts[key]);
-	});
-	return new Hot(opts.defaultOpts).init(opts.mediaPath);
-}
-
-export function getHotOptions(): { defaultOpts: hotOptions, mediaPath: string } {
-	const app = new TypeDoc.Application();
-	load(app);
-	const defaultOpts = app.options.getValue('hot-dev');
-	app.options.addReader(new TypeDoc.TypeDocReader());
-	app.bootstrap();
-	const options = app.options.getValue('hot-dev');
-	Object.keys(options).forEach(key => {
-		defaultOpts[key] && (defaultOpts[key] = options[key]);
-	});
-	const mediaPath = app.options.getValue('media');
-	return {defaultOpts, mediaPath};
+export function init(overrideHot: hotOptions = {}) {
+	return new Hot().init(overrideHot);
 }

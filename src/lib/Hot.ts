@@ -10,6 +10,7 @@ import browserSync from 'browser-sync';
 import { allOptions, hotOptions, runners, spawnedProcess } from '../types';
 import { Spawn } from './Spawn';
 import { HotEmitter } from '../interface/HotEmitter';
+import TypeDoc = require('typedoc');
 
 const browser = browserSync.create();
 const testing = (process.env.Node === 'test');
@@ -26,19 +27,21 @@ export class Hot extends Spawn {
 	tdoc: spawnedProcess;
 	fileWatcher;
 	tdocBuildCount: number;
+	app: TypeDoc.Application;
 
-	constructor(HotOpts: hotOptions) {
+	constructor() {
 		super(emitter);
 		this.tdocBuildCount = 0;
-		this.opts = {
-			hot: HotOpts
-		};
+		this.app = new TypeDoc.Application();
 	}
 
-	public async init(mediaPath: string, tsdocRunner: runners = 'node'): Promise<{ tsc, tdoc, fileWatcher, httpPath }> {
-
+	public async init(overrideHot: hotOptions, tsdocRunner: runners = 'node'): Promise<{ tsc, tdoc, fileWatcher, opts: allOptions }> {
+		this.opts = {
+			overrideHot
+		};
+		this.parseOptions(this.opts, this.app);
+		this.getTdocOptions(this.emitter, this.opts, new AbortController(), tsdocRunner);
 		this.getTscConfig(this.emitter);
-		this.getTdocOptions(this.emitter, this.opts.hot, new AbortController(), tsdocRunner);
 		
 		return new Promise(resolve => {
 
@@ -48,14 +51,14 @@ export class Hot extends Spawn {
 			});
 			this.emitter.once('tdoc.build.init', () => {
 				this.emitter.log.message('hot', 'initial documents built', true);
-				!testing && browser.init({ server: this.opts.tdoc.out }); //cannot get Mocha/sinon to stub browserSync
+				!testing && browser.init({ server: this.opts.targetOutPath }); //cannot get Mocha/sinon to stub browserSync
 
 				this.fileWatcher = this.startWatchingFiles(this.opts, this.emitter);
 				resolve({
 					tsc: this.tsc,
 					tdoc: this.tdoc,
 					fileWatcher: this.fileWatcher,
-					httpPath: this.opts.tdoc.out
+					opts: this.opts
 				}); //resolved values are for the purpose of tests
 
 			});
@@ -75,17 +78,18 @@ export class Hot extends Spawn {
 				}
 			});
 			this.emitter.on('options.ready', () => {
-				this.opts = this.parseOptions(this.opts, mediaPath);
 				this.tsc = this.spawnTscWatch(this.emitter, new AbortController(), this.opts);
 			});
 			this.emitter.on('options.set.tsc', opts => {
 				this.opts.tsc = opts;
-				this.opts.tdoc && this.emitter.options.ready();
+				this.opts.tdocTarget && this.emitter.options.ready();
 			});
 			this.emitter.on('options.set.tdoc', opts => {
-				this.opts.tdoc = opts;
+				this.opts.tdocTarget = opts;
+				this.opts.targetOutPath = opts.out;
 				this.opts.tsc && this.emitter.options.ready();
 			});
+			
 			this.emitter.on('log.message', (message, context, type, prefix) => this.logger(message, context, type, prefix));
 		});
 	}

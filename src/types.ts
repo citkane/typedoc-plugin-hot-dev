@@ -18,14 +18,23 @@ export interface hotOptions {
 }
 
 export type allOptions = {
-	/** The tsc options as seen by a spawned process */
+	/** The typdoc options as seen by the spawned process */
 	tsc?: { [key: string]: unknown };
-	/** The tdoc options as seen by typedoc */
-	tdoc?: { [key: string]: unknown };
-	/** The absolute paths for hot-dev */
-	hot?: hotOptions;
+	/** The tdoc options as seen by typedoc in theme project*/
+	tdocSource?: { [key: string]: unknown };
+	/** The tdoc options as seen by typedoc spawn in the target project*/
+	tdocTarget?: { [key: string]: unknown };
+	/** relative paths passed as an override to default options */
+	overrideHot?: hotOptions;
+	/** relative paths as defined in typedoc.json */
+	localHot?: hotOptions;
+	/** The absolute path to the target cwd */
 	targetCwdPath?: string;
+	/** The absolute path to the target docs output directory */
+	targetOutPath?: string;
+	/** The absolute path to the source media directory */
 	sourceMediaPath?: string;
+	/** The absoluete path to the source dist build directory */
 	sourceDistPath?: string;
 }
 

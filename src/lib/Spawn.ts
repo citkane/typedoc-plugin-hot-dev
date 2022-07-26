@@ -2,7 +2,7 @@ import { spawn } from 'child_process';
 import path from 'path';
 import { HotEmitter } from '../interface/HotEmitter';
 import { HotUtils } from './Utils';
-import { spawnedProcess, hotOptions, allOptions } from '../types';
+import { spawnedProcess, allOptions } from '../types';
 
 
 /**
@@ -110,14 +110,14 @@ export class Spawn extends HotUtils {
 
 	protected getTdocOptions(
 		emitter: HotEmitter,
-		opts: hotOptions,
+		opts: allOptions,
 		controller: AbortController,
 		command = 'node'
 	) {
-		const cwd = path.join(process.cwd(), opts.targetCwd);
+		//const cwd = path.join(process.cwd(), opts.targetCwdPath);
 		const { signal } = controller;
 		
-		const tsdoc = spawn(command, [ path.join(__dirname, '../spawned'), 'getOptions'], { cwd, signal });
+		const tsdoc = spawn(command, [ path.join(__dirname, '../spawned'), 'getOptions'], { cwd: opts.targetCwdPath, signal });
 
 		tsdoc.on('error', (err: Error) => emitter.log.error('tsc', err.message.toString()));
 		tsdoc.stdout.on('data', (data: Buffer) => {

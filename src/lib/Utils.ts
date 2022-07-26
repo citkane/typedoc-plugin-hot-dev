@@ -3,6 +3,8 @@ import chokidar = require('chokidar');
 
 import { allOptions, logContexts } from '../types';
 import { HotEmitter } from '../interface/HotEmitter';
+import TypeDoc = require('typedoc');
+import { load } from '..';
 
 export class HotUtils {
 	emitter: HotEmitter;
@@ -14,15 +16,24 @@ export class HotUtils {
 		this.timer;
 	}
 
-	protected parseOptions(opts: allOptions, mediaPath): allOptions {
+	protected parseOptions(opts: allOptions, app: TypeDoc.Application): allOptions {
+		load(app);
+		opts.localHot = app.options.getValue('hot-dev');
+		app.options.addReader(new TypeDoc.TypeDocReader());
+		app.bootstrap();
+		opts.tdocSource = app.options['_values'];
+
+		const hotOpts = opts.localHot;
+		Object.keys(hotOpts).forEach(key => {
+			opts.tdocSource['hot-dev'][key] && (hotOpts[key] = opts.tdocSource['hot-dev'][key]);
+			opts.overrideHot[key] && (hotOpts[key] = opts.overrideHot[key]);
+		});
+
 
 		const cwd = path.normalize(process.cwd());
-		opts.targetCwdPath = path.normalize(path.join(cwd, opts.hot.targetCwd));
-		opts.sourceMediaPath = path.normalize(opts.tdoc.media as string);
-		opts.sourceMediaPath = mediaPath ? path.normalize(mediaPath) : null;
-
-		const distPath = opts.hot.sourceDist ? opts.hot.sourceDist : opts.tsc.compilerOptions['outDir'];
-		opts.sourceDistPath = path.join(cwd, distPath);
+		opts.targetCwdPath = path.normalize(path.join(cwd, hotOpts.targetCwd));
+		opts.sourceMediaPath = path.normalize(opts.tdocSource.media as string);
+		opts.sourceDistPath = path.join(cwd, hotOpts.sourceDist);
 
 		return opts;
 	}
