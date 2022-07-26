@@ -30,12 +30,12 @@ Options can be passed into `init(options)` or defined in `typedoc.json` under th
 	 * Hot-dev watches here for source changes,
 	 * so if it is not the default you must define it.
 	 */
-	"dist": "dist", //<default>
+	"sourceDist": "dist", //<default>
 
 	/* The relative path to the root of the project that you want to build documentation for.  
 	 * Defaults to documentation for the theme you are developing.
 	 */
-	"cwd": "./" //<default> * See Footnote
+	"targetCwd": "./" //<default> * See Footnote
 }
 ```
 
