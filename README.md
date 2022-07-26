@@ -24,14 +24,20 @@ init([, options]);
 #### Options
 Options can be passed into `init(options)` or defined in `typedoc.json` under the key of `"hot-dev":{...}`
 
-- **"sourceDist"**  
-  The relative path to the root of your theme's tsc compiled code.  
-  Defaults to `./dist`.  
-  Hot-dev watches here for source changes, so **you must defined it if not as per the default.**
-- **"targetCwd"**  
-  The relative path to the root of the project that you want to build documentation for.  
-  Defaults to `./` (ie. documentation for the theme you are developing).  
-  \* See Footnote
+```jsonc
+{
+	/* The relative path to the root of your theme's tsc compiled code. 
+	 * Hot-dev watches here for source changes,
+	 * so if it is not the default you must define it.
+	 */
+	"dist": "dist", //<default>
+
+	/* The relative path to the root of the project that you want to build documentation for.  
+	 * Defaults to documentation for the theme you are developing.
+	 */
+	"cwd": "./" //<default> * See Footnote
+}
+```
 
 **Footnote**  
 When targeting an external project for hot previewing (ie. not the documentation for the theme you are developing), at that location you will install the theme you are developing as so:
