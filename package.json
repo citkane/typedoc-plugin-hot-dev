@@ -83,7 +83,7 @@
 			"src/**/*.ts"
 		],
 		"reporter": [
-			"html",
+			"clover",
 			"text"
 		],
 		"all": true,
