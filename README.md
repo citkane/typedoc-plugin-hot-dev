@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/citkane/typedoc-plugin-hot-dev/branch/main/graph/badge.svg?token=GXPS7CMTXP)](https://codecov.io/gh/citkane/typedoc-plugin-hot-dev)
+![Build](https://github.com/citkane/typedoc-plugin-hot-dev/actions/workflows/build.yml/badge.svg)
 ## :fire: Typedoc-Plugin-Hot-Dev
 This is a helper for [TypeDoc](https://typedoc.org/) theme development.  
 
