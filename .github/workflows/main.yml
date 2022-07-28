@@ -22,10 +22,7 @@ jobs:
 
     
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-
-      # Runs a single command using the runners shell
       - name: install
         uses: actions/setup-node@v3
         with:
@@ -35,19 +32,10 @@ jobs:
         run: |
           npm run test
           npm run build
-  codeCover:
-    
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: CodeCov upload
-      - uses: codecov/codecov-action@v3
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
         with:
-          files: ./test/coverage/clover.xml
-          name: codecov-umbrella
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./test/coverage/
           fail_ci_if_error: true
           verbose: true
-          run: |
-            curl -Os https://uploader.codecov.io/latest/linux/codecov
-            chmod +x codecov
-            ./codecov
