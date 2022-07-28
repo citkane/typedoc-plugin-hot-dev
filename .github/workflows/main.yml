@@ -36,10 +36,4 @@ jobs:
         run: |
           npm run test
           npm run build    
-      - name: CodeCov upload
-      - uses: codecov/codecov-action@v3
-        with:
-          files: ./test/coverage/clover.xml
-          name: codecov-umbrella
-          fail_ci_if_error: true
-          verbose: true
+
