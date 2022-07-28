@@ -35,5 +35,5 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:
-          files: ./test/coverage/clover.xml
+          directory: ./test/coverage
           verbose: true
