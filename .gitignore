@@ -1,9 +1,0 @@
-dist
-node_modules
-typedoc-hot-dev*
-docs
-coverage
-.nyc_output
-.tmp
-teststubfile.*
-*.tgz
