@@ -5,7 +5,7 @@
 		"./src/index.ts",
 		"./src/types.ts",
 		"./src/spawned.ts",
-		"./src/HotEmitter.ts",
+		"./src/interface/HotEmitter.ts",
 		"./src/lib/Hot.ts",
 		"./src/lib/Spawn.ts",
 		"./src/lib/Utils.ts"
