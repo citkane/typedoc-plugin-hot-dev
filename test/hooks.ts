@@ -19,7 +19,7 @@ export const mochaHooks = {
 		done();
 	},
 	afterAll(done){		
-		cleanDirs([tempPath, stubSrcFile, sourceDistPath, targetDocPath]);
+		cleanDirs([tempPath, stubSrcFile, targetDocPath]);
 		done();
 	}
 }

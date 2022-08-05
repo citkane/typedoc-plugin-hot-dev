@@ -27,7 +27,7 @@ import {
 describe('Plugin loading and environment smoke tests', function(){
 	it(`compiles into the default distribution folder`, async function(){
 		this.timeout(10000);
-		assert.doesNotThrow(() => spawnSync('npx', ['tsc'], {cwd}));
+		assert.doesNotThrow(() => spawnSync('npm', ['run', 'build'], {cwd}));
 	})
 })
 
