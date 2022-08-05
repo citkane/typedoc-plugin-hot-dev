@@ -5,7 +5,7 @@
 	"main": "./dist/index.js",
 	"scripts": {
 		"docs": "typedoc",
-		"build": "tsc",
+		"build": "./build.sh",
 		"test": "nyc mocha"
 	},
 	"repository": {
