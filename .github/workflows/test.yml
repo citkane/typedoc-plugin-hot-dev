@@ -16,5 +16,9 @@ jobs:
         run: |
           npm ci
           npm run test
-      - name: build
-        run: npm run build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: distribution
+          path: ./dist
