@@ -1,18 +1,25 @@
 import sinon from 'sinon';
+import { cleanDirs, sourceDistPath, stubSrcFile, targetDocPath, tempPath  } from './testutils';
 
-sinon.stub(console, 'error');
-sinon.stub(console, 'warn');
-sinon.stub(console, 'log');
+
 
 export const mochaHooks = {
+	beforeAll(done){
+		cleanDirs([tempPath, stubSrcFile, sourceDistPath, targetDocPath]);
+		done();
+	},
 	beforeEach(done){
+		sinon.stub(console, 'error');
+		sinon.stub(console, 'warn');
+		sinon.stub(console, 'log');	
 		done();
 	},
 	afterEach(done){
 		sinon.restore();
-		sinon.stub(console, 'error');
-		sinon.stub(console, 'warn');
-		sinon.stub(console, 'log');
+		done();
+	},
+	afterAll(done){		
+		cleanDirs([tempPath, stubSrcFile, sourceDistPath, targetDocPath]);
 		done();
 	}
 }

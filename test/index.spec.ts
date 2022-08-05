@@ -2,30 +2,27 @@ process.env.Node = 'test';
 
 import fs from 'fs-extra';
 import path, { resolve } from 'path';
-import sinon from 'sinon';
 import { assert } from 'chai';
 import { Hot } from '../src/lib/Hot';
-import { hotOptions } from '../src/types';
 import { HotEmitter } from '../src/interface/HotEmitter';
 import { spawnSync } from 'child_process';
 import { Application } from 'typedoc';
+import {
+	cwd,
+	cleanDirs, 
+	sourceDistPath, 
+	sourceMediaPath, 
+	stripTrailing, 
+	stubDistFile, 
+	stubDocMediaFile, 
+	stubSrcFile, 
+	stubSrcMediaFile, 
+	targetDocDir, 
+	targetDocPath, 
+	waitForFile, 
+	overrideHot
+} from './testutils';
 
-const cwd = path.normalize(process.cwd());
-const tempFolder = path.normalize('./.tmp');
-const sourcDistDir = path.normalize('./dist');
-const sourceDistPath = path.join(cwd,  sourcDistDir);
-const sourceMediaPath = path.join(cwd, tempFolder, 'media');
-const targetDocDir = path.normalize('./docs');
-const targetDocPath = path.join(cwd, targetDocDir);
-const stubSrcFile = path.join(cwd, '/src/teststubfile.ts');
-const stubDistFile = path.join(sourceDistPath, 'teststubfile.js');
-const stubSrcMediaFile = path.join(sourceMediaPath, '/teststubfile.css');
-const stubDocMediaFile = path.join(targetDocPath, './media/teststubfile.css');
-
-const overrideHot: hotOptions = {
-	targetCwd: path.normalize('./'),
-	sourceDist: sourcDistDir
-}
 
 describe('Plugin loading and environment smoke tests', function(){
 	it(`compiles into the default distribution folder`, async function(){
@@ -75,13 +72,10 @@ describe('Unit testing for typedoc-plugin-hot-dev', function () {
 describe('Functional testing for typedoc-plugin-hot-dev', function () {
 
 	before(function () {
-		cleanDirs([tempFolder, stubSrcFile]);
 		this.hot = new Hot();
 		this.emitter = new HotEmitter()
 	});
-	after(function () {
-		cleanDirs([tempFolder, stubSrcFile, sourcDistDir]);
-	});
+
 	it(`spawns a tsc process that compiles to the "${sourceDistPath}"`, function (done) {
 		this.timeout(10000);
 		this.tsc = this.hot.spawnTscWatch(this.emitter, new AbortController(),{sourceDistPath, tsc:{}, tdoc: {}});
@@ -108,7 +102,6 @@ describe('Functional testing for typedoc-plugin-hot-dev', function () {
 	})
 	it(`spawns a typedoc process that builds docs to the "${targetDocDir}" folder`, async function () {
 		this.timeout(30000);
-		//const allOps = await getAllOpts(); 
 		const allOps = this.hot.parseOptions({overrideHot}, new Application());
 		const startController = new AbortController();
 		const tdoc = this.hot.spawnTsDoc(this.emitter, allOps, startController, 'ts-node', 0);
@@ -125,12 +118,10 @@ describe('Functional testing for typedoc-plugin-hot-dev', function () {
 })
 
 describe('End to End test for typedoc-plugin-hot-dev', function () {
-	before(async function () {
-		cleanDirs([tempFolder, stubSrcFile])
+	before(function(){
 		fs.ensureDirSync(sourceMediaPath);
 	});
 	after(function(done){
-		cleanDirs([targetDocDir, tempFolder, stubSrcFile, sourcDistDir]);
 		this.fileWatcher.close();
 		this.tdoc.controller.abort();
 		this.tsc.controller.abort();
@@ -176,23 +167,5 @@ describe('End to End test for typedoc-plugin-hot-dev', function () {
 
 })
 
-function cleanDirs(dirs) {
-	dirs.forEach(dir => fs.removeSync(dir));
-}
-function waitForFile(file: string, timeout = 3000) {
-	return new Promise((resolve) => {
-		const interval = setInterval(function () {
-			if (fs.existsSync(file)) {
-				clearTimeout(timer);
-				clearInterval(interval);
-				resolve(true);
-			}
-		}, 100)
-		const timer = setTimeout(function () {
-			clearInterval(interval);
-			resolve(false);
-		}, timeout)
-	});
-}
-const stripTrailing = (path) => path.replace(/\/$/, '');
+
 
