@@ -2,7 +2,7 @@
 	"name": "typedoc-plugin-hot-dev",
 	"version": "0.0.7",
 	"description": "Provides a Typedoc hot theme development environment",
-	"main": "./dist/index.js",
+	"main": "./src/index",
 	"scripts": {
 		"docs": "typedoc",
 		"build": "./build.sh",
