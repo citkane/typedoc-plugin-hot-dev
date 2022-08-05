@@ -5,7 +5,7 @@
 [![docs stable](https://img.shields.io/badge/docs-stable-teal.svg)](https://citkane.github.io/typedoc-plugin-hot-dev/stable)
 [![docs dev](https://img.shields.io/badge/docs-dev-teal.svg)](https://citkane.github.io/typedoc-plugin-hot-dev/dev)
 
-## 🔥 Typedoc-Plugin-Hot-Dev
+# 🔥 Typedoc-Plugin-Hot-Dev
 This is a helper for [TypeDoc](https://typedoc.org/) theme development.  
 
 Think 'create-react-app' live server - just for TypeDoc.
@@ -13,7 +13,8 @@ Think 'create-react-app' live server - just for TypeDoc.
 - Slow(er) compile for source files (documents get rebuilt).
 - Works with all typedoc entrypoint strategies.
 
-#### Hot development usage
+<br /><br />
+## Hot development usage
 ```bash
 npm i -D typedoc-plugin-hot-dev
 npx hot-dev #please set up options first
@@ -28,38 +29,34 @@ init([, options]);
 
 ```
 
-#### Options
+<br /><br />
+## Options
 Options can be passed into `init(options)` or defined in `typedoc.json` under the key of `"hot-dev":{...}`
 
-```jsonc
-{
-	/* The relative path to the root of your theme's tsc compiled code. 
-	 * Hot-dev watches here for source changes,
-	 * so if it is not the default you must define it.
-	 */
-	"sourceDist": "dist", //<default>
+| key  | Description | Type | Required | Default Value |
+| :--- | :---------- | :--- | :------: | :-----------: |
+| ***sourceDist*** | The relative path to the root of your theme's tsc compiled code. Hot-dev watches here for source changes, so if it is not the default you must define it. | *string* | **no** | "dist" |
+| ***targetCwd*** | The relative path to the root of the project that you want to build documentation for. The default is documentation for the theme you are developing. | *string* | **no** | "./" |
+| ***npmScripts*** | Scripts defined in your package.json.scripts which you may want to run in a non-blocking fashion, eg. sass in watch mode. | *string[]* | **no** | [] |
 
-	/* The relative path to the root of the project that you want to build documentation for.  
-	 * Defaults to documentation for the theme you are developing.
-	 */
-	"targetCwd": "./" //<default> * See Footnote
-}
+<br /><br />
+## Footnote
+When, and only when, targeting an external project to build docs for your development theme (ie. ***targetCwd*** is pointing to a project that is not the theme you are developing), at that location you are likely to install the theme you are developing as so:
+```
+npm install ../path/to/typedoc-theme-yourtheme/dist
 ```
 
-**Footnote**  
-When targeting an external project for hot previewing (ie. not the documentation for the theme you are developing), at that location you will install the theme you are developing as so:
-```
-npm install ../path/to/typedoc-theme-yourtheme
-```
+This will create a symlink to your theme in the `./node_modules` folder of your external project. 
 
-This will create a symlink in ./node_modules of your theme project, but will cause peerdependies to fail. [This is an issue with node](https://github.com/npm/npm/issues/5875).
+This will cause Typedoc's peerdependency to fail when running hot-dev. [This is an issue with node](https://github.com/npm/npm/issues/5875).
 
-To work around this from your theme directory directory:
+To work around this, from your theme directory directory, do:
 ```
 npm install ../some/other/project/node_modules/typedoc
 ```
+This will ensure that typedoc instance is always from the highest level.
 
-and after development work is done:
+After hot development work is done , do something like this in your theme to restore sanity:
 ```
 npm remove typedoc
 npm i -D typedoc
