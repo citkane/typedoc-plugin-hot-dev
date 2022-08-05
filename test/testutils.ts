@@ -26,7 +26,7 @@ export const stripTrailing = (path) => path.replace(/\/$/, '');
 export const cwd = path.normalize(process.cwd());
 export const tempFolder = path.normalize('./.tmp');
 export const tempPath = path.join(cwd, tempFolder);
-export const sourcDistDir = path.normalize('./dist');
+export const sourcDistDir = path.normalize('./dist/src');
 export const sourceDistPath = path.join(cwd,  sourcDistDir);
 export const sourceMediaPath = path.join(cwd, tempFolder, 'media');
 export const targetDocDir = path.normalize('./docs');
