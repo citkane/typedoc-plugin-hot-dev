@@ -128,4 +128,32 @@ export class Spawn extends HotUtils {
 		tsdoc.stderr.on('data', (data: Buffer) => emitter.log.warning('tdoc', data.toString('utf8')));
 		tsdoc.on('error', (err: Error) => { throw err; });
 	}
+
+	protected spawnNpmScript (emitter: HotEmitter, controller: AbortController, script: string): spawnedProcess {
+		const { signal } = controller;
+		const npmScript = spawn('npm', ['run', script], {signal});
+		npmScript.on('error', (err: Error) => {
+			controller.abort();
+			npmScript.kill(0);
+			emitter.log.error('npm', err.message.toString());
+		});
+		npmScript.stdout.on('data', (data: Buffer) => {
+			const message = data.toString('utf8').trim();
+			emitter.log.message('npm', message);
+		});
+		npmScript.stderr.on('data', (data: Buffer) => {
+			controller.abort();
+			npmScript.kill(0);
+			emitter.log.warning('npm', data.toString('utf8'));
+		});
+		return { process:npmScript, controller };
+	}
+
+	protected runNpmScripts(emitter: HotEmitter, opts: allOptions): spawnedProcess[] {
+		const npmScripts: spawnedProcess[] = [];
+		opts.localHot.npmScripts.forEach(script => {
+			npmScripts[script] = this.spawnNpmScript(emitter, new AbortController(), script);
+		});
+		return npmScripts;
+	}
 }

@@ -25,6 +25,7 @@ export class Hot extends Spawn {
 	opts: allOptions;
 	tsc: spawnedProcess;
 	tdoc: spawnedProcess;
+	npmScripts: spawnedProcess[];
 	fileWatcher;
 	tdocBuildCount: number;
 	app: TypeDoc.Application;
@@ -33,64 +34,67 @@ export class Hot extends Spawn {
 		super(emitter);
 		this.tdocBuildCount = 0;
 		this.app = new TypeDoc.Application();
+		this.npmScripts = [];
 	}
 
-	public async init(overrideHot: hotOptions, tsdocRunner: runners = 'node'): Promise<{ tsc, tdoc, fileWatcher, opts: allOptions }> {
+	public async init(overrideHot: hotOptions, tsdocRunner: runners = 'node', emitter = this.emitter): Promise<{ tsc, tdoc, npmScripts, fileWatcher, opts: allOptions }> {
 		this.opts = {
 			overrideHot
 		};
 		this.parseOptions(this.opts, this.app);
-		this.getTdocOptions(this.emitter, this.opts, new AbortController(), tsdocRunner);
-		this.getTscConfig(this.emitter);
+		this.npmScripts = this.runNpmScripts(emitter, this.opts);
+		this.getTdocOptions(emitter, this.opts, new AbortController(), tsdocRunner);
+		this.getTscConfig(emitter);
 		
 		return new Promise(resolve => {
 
-			this.emitter.on('tsc.compile.done', () => {
-				this.emitter.log.message('hot', 'tsc compiled in watch mode', true);
-				this.tdoc = this.spawnTsDoc(this.emitter, this.opts, new AbortController(), tsdocRunner, this.tdocBuildCount);
+			emitter.on('tsc.compile.done', () => {
+				emitter.log.message('hot', 'tsc compiled in watch mode', true);
+				this.tdoc = this.spawnTsDoc(emitter, this.opts, new AbortController(), tsdocRunner, this.tdocBuildCount);
 			});
-			this.emitter.once('tdoc.build.init', () => {
-				this.emitter.log.message('hot', 'initial documents built', true);
+			emitter.once('tdoc.build.init', () => {
+				emitter.log.message('hot', 'initial documents built', true);
 				!testing && browser.init({ server: this.opts.targetOutPath }); //cannot get Mocha/sinon to stub browserSync
 
-				this.fileWatcher = this.startWatchingFiles(this.opts, this.emitter);
+				this.fileWatcher = this.startWatchingFiles(this.opts, emitter);
 				resolve({
 					tsc: this.tsc,
 					tdoc: this.tdoc,
+					npmScripts: this.npmScripts,
 					fileWatcher: this.fileWatcher,
 					opts: this.opts
 				}); //resolved values are for the purpose of tests
 
 			});
-			this.emitter.on('tdoc.build.refreshed', () => {
+			emitter.on('tdoc.build.refreshed', () => {
 				!testing && browser.reload(); //cannot get Mocha/sinon to stub browserSync
 			});
 
-			this.emitter.on('files.changed', path => {
+			emitter.on('files.changed', path => {
 				if (path.startsWith(this.opts.sourceMediaPath)) {
-					this.emitter.log.message('hot', 'change asset', true);
+					emitter.log.message('hot', 'change asset', true);
 					this.tdoc.process.stdin.write('buildDocs');
 				} else {
-					this.emitter.log.message('hot', 'change source', true);
+					emitter.log.message('hot', 'change source', true);
 					this.tdocBuildCount++;
 					this.tdoc.controller.abort();
-					this.tdoc = this.spawnTsDoc(this.emitter, this.opts, new AbortController(), tsdocRunner, this.tdocBuildCount);
+					this.tdoc = this.spawnTsDoc(emitter, this.opts, new AbortController(), tsdocRunner, this.tdocBuildCount);
 				}
 			});
-			this.emitter.on('options.ready', () => {
-				this.tsc = this.spawnTscWatch(this.emitter, new AbortController(), this.opts);
+			emitter.on('options.ready', () => {
+				this.tsc = this.spawnTscWatch(emitter, new AbortController(), this.opts);
 			});
-			this.emitter.on('options.set.tsc', opts => {
+			emitter.on('options.set.tsc', opts => {
 				this.opts.tsc = opts;
-				this.opts.tdocTarget && this.emitter.options.ready();
+				this.opts.tdocTarget && emitter.options.ready();
 			});
-			this.emitter.on('options.set.tdoc', opts => {
+			emitter.on('options.set.tdoc', opts => {
 				this.opts.tdocTarget = opts;
 				this.opts.targetOutPath = opts.out;
-				this.opts.tsc && this.emitter.options.ready();
+				this.opts.tsc && emitter.options.ready();
 			});
 			
-			this.emitter.on('log.message', (message, context, type, prefix) => this.logger(message, context, type, prefix));
+			emitter.on('log.message', (context, message, type, prefix) => this.logger(context, message, type, prefix));
 		});
 	}
 

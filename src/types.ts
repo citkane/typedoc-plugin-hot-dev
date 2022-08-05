@@ -14,7 +14,12 @@ export interface hotOptions {
 	 * Typically `./dist`.  
 	 * If not specified, the default tsc `outDir` will be used.
 	*/
-	sourceDist?: string
+	sourceDist?: string,
+	/**
+	 * An array of npm scripts from you package.json you may want to run.
+	 * This is handy for eg. keeping a non blocking sass compiler in watch mode running.
+	 */
+	npmScripts?: string[]
 }
 
 export type allOptions = {
@@ -53,5 +58,5 @@ export interface processes {
 	tdoc: spawnedProcess;
 }
 
-export type logContexts = 'tsc' | 'tdoc' | 'hot';
+export type logContexts = 'tsc' | 'tdoc' | 'hot' | 'npm';
 export type runners = 'node' | 'ts-node';
