@@ -31,7 +31,7 @@
 		"node": ">=16.0.0"
 	},
 	"bin": {
-		"hot-dev": "./dist/bin/hot.js"
+		"hot-dev": "./src/bin/hot.js"
 	},
 	"dependencies": {
 		"browser-sync": "^2.27.10",
