@@ -1,5 +1,5 @@
 [![codecov](https://codecov.io/gh/citkane/typedoc-plugin-hot-dev/branch/main/graph/badge.svg?token=GXPS7CMTXP)](https://codecov.io/gh/citkane/typedoc-plugin-hot-dev)
-![Build](https://github.com/citkane/typedoc-plugin-hot-dev/actions/workflows/build.yml/badge.svg)
+[![RELEASE AND PUBLISH](https://github.com/citkane/typedoc-plugin-hot-dev/actions/workflows/release.yml/badge.svg)](https://github.com/citkane/typedoc-plugin-hot-dev/actions/workflows/release.yml)
 [![GitHub](https://badgen.net/badge/icon/github?icon=github&label)](https://github.com/citkane/typedoc-plugin-hot-dev)
 [![Npm](https://badgen.net/badge/icon/npm?icon=npm&label)](https://npmjs.com/package/typedoc-plugin-hot-dev)
 [![docs stable](https://img.shields.io/badge/docs-stable-teal.svg)](https://citkane.github.io/typedoc-plugin-hot-dev/stable)
