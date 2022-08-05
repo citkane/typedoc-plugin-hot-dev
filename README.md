@@ -1,6 +1,11 @@
 [![codecov](https://codecov.io/gh/citkane/typedoc-plugin-hot-dev/branch/main/graph/badge.svg?token=GXPS7CMTXP)](https://codecov.io/gh/citkane/typedoc-plugin-hot-dev)
 ![Build](https://github.com/citkane/typedoc-plugin-hot-dev/actions/workflows/build.yml/badge.svg)
-## :fire: Typedoc-Plugin-Hot-Dev
+[![GitHub](https://badgen.net/badge/icon/github?icon=github&label)](https://github.com/citkane/typedoc-plugin-hot-dev)
+[![Npm](https://badgen.net/badge/icon/npm?icon=npm&label)](https://npmjs.com/package/typedoc-plugin-hot-dev)
+[![docs stable](https://img.shields.io/badge/docs-stable-teal.svg)](https://citkane.github.io/typedoc-plugin-hot-dev/stable)
+[![docs dev](https://img.shields.io/badge/docs-dev-teal.svg)](https://citkane.github.io/typedoc-plugin-hot-dev/dev)
+
+## 🔥 Typedoc-Plugin-Hot-Dev
 This is a helper for [TypeDoc](https://typedoc.org/) theme development.  
 
 Think 'create-react-app' live server - just for TypeDoc.
