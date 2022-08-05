@@ -17,6 +17,12 @@ jobs:
           npm ci
           npm run test
 
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage
+          path: ./test/coverage/clover.xml
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
         with:
