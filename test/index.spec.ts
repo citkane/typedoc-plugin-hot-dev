@@ -125,28 +125,48 @@ describe('End to End test for typedoc-plugin-hot-dev', function () {
 		this.fileWatcher.close();
 		this.tdoc.controller.abort();
 		this.tsc.controller.abort();
+		this.npmScripts.forEach(spawn => {
+			spawn.controller.abort();
+		})
 		
 		setTimeout(() => {
 			this.tdoc.process.kill(0);
 			this.tsc.process.kill(0);
+			this.npmScripts.forEach(spawn => {
+				spawn.process.kill(0);
+			})
 			done()
 		},100)
 	})
 
 	it('starts a tsc compiler in watch mode and runs the initial doc build', async function () {
 		this.timeout(30000);
+
+		const emitter = new HotEmitter();
+		emitter.on('log.message', (context, message, type, prefix) => {
+			if (context === 'npm') {
+				message = message.trim();
+				(message === 'test') && (this.npmTestRan = true);
+				(message.startsWith('ERR! Missing script: "foo"')) && (this.npmTestFailed = true);
+			}
+		});
 		({
 			tsc: this.tsc,
 			tdoc: this.tdoc,
+			npmScripts: this.npmScripts,
 			fileWatcher: this.fileWatcher,
 			opts: this.opts
-		} = await new Hot().init(overrideHot, 'ts-node'));
+		} = await new Hot().init(overrideHot, 'ts-node', emitter));
 		
 		assert.exists(this.tsc.controller.abort);
 		assert.exists(this.tdoc.controller.abort);
 		assert.exists(this.tsc.process.kill);
 		assert.exists(this.tdoc.process.kill);
 		assert.exists(this.fileWatcher.close);
+	})
+	it('spawns npm scripts', function(){
+		assert.isTrue(this.npmTestRan, 'npm script failed to run');
+		assert.isTrue(this.npmTestFailed, 'failed npm script did not register');
 	})
 	it('triggers the browser client at the correct path', function(done){
 		assert.equal(this.opts.targetOutPath, path.join(process.cwd(), targetDocDir), 'the hot browser was not trigged');
