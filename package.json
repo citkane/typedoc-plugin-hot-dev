@@ -1,6 +1,6 @@
 {
 	"name": "typedoc-plugin-hot-dev",
-	"version": "0.0.8",
+	"version": "0.0.9",
 	"description": "Provides a Typedoc hot theme development environment",
 	"main": "./src/index",
 	"scripts": {
