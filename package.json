@@ -28,7 +28,7 @@
 	"homepage": "https://github.com/citkane/typedoc-plugin-hot-dev#readme",
 	"engines": {
 		"npm": ">=7.0.0",
-		"node": ">=16.0.0"
+		"node": ">=15.0.0"
 	},
 	"bin": {
 		"hot-dev": "./dist/bin/hot.js"
@@ -46,11 +46,10 @@
 		"@types/mocha": "^9.1.1",
 		"@types/node": "^18.0.5",
 		"@types/sinon": "^10.0.12",
-		"@types/wtfnode": "^0.7.0",
-		"@typescript-eslint/eslint-plugin": "^5.30.6",
-		"@typescript-eslint/parser": "^5.30.6",
+		"@typescript-eslint/eslint-plugin": "^5.32.0",
+		"@typescript-eslint/parser": "^5.32.0",
 		"chai": "^4.3.6",
-		"eslint": "^8.20.0",
+		"eslint": "^8.21.0",
 		"mocha": "^10.0.0",
 		"nyc": "^15.1.0",
 		"sinon": "^14.0.0",
