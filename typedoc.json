@@ -15,6 +15,7 @@
 	"externalPattern": ["**/node_modules/**"],
 	"excludeExternals": true,
 	"logLevel": "Verbose",
+	"includeVersion": true,
 	"plugin": ["./dist", "typedoc-plugin-versions"],
 	"versions": {
 		"stable": "0.0"
