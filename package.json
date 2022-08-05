@@ -28,7 +28,7 @@
 	"homepage": "https://github.com/citkane/typedoc-plugin-hot-dev#readme",
 	"engines": {
 		"npm": ">=7.0.0",
-		"node": ">=15.0.0"
+		"node": ">=16.0.0"
 	},
 	"bin": {
 		"hot-dev": "./dist/bin/hot.js"
