@@ -12,6 +12,7 @@ Think 'create-react-app' live server - just for TypeDoc.
 - Quick compile for media asset updates (eg. css)
 - Slow(er) compile for source files (documents get rebuilt).
 - Works with all typedoc entrypoint strategies.
+- Automatically opens in your browser
 
 <br /><br />
 ## Hot development usage
