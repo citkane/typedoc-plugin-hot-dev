@@ -52,7 +52,7 @@ export class HotUtils {
 		});
 		const docFolder = fs.readJSONSync(tdPath).out;
 		!docFolder && (() => {
-			throw new Error(`Please set "out" in "${tdPath}"`)
+			throw new Error(`Please set "out" in "${tdPath}"`);
 		});
 		return path.join(opts.targetCwdPath, docFolder);
 	}
