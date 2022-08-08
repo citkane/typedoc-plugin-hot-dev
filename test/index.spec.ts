@@ -140,7 +140,7 @@ describe('End to End test for typedoc-plugin-hot-dev', function () {
 			if (context === 'npm') {
 				message = message.trim();
 				(message === 'test') && (this.npmTestRan = true);
-				(message.startsWith('ERR! Missing script: "foo"')) && (this.npmTestFailed = true);
+				(message.indexOf('Missing script: "foo"') > -1 ) && (this.npmTestFailed = true);
 			}
 		});
 		({
