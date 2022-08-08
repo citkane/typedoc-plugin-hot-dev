@@ -121,22 +121,12 @@ describe('End to End test for typedoc-plugin-hot-dev', function () {
 	before(function(){
 		fs.ensureDirSync(sourceMediaPath);
 	});
-	after(function(done){
-		this.fileWatcher.close();
-		this.tdoc.controller.abort();
-		this.tsc.controller.abort();
+	after(function(){
+		this.tdoc.process.kill(0);
+		this.tsc.process.kill(0);
 		this.npmScripts.forEach(spawn => {
-			spawn.controller.abort();
-		})
-		
-		setTimeout(() => {
-			this.tdoc.process.kill(0);
-			this.tsc.process.kill(0);
-			this.npmScripts.forEach(spawn => {
-				spawn.process.kill(0);
-			})
-			done()
-		},100)
+			spawn.process.kill(0);
+		});
 	})
 
 	it('starts a tsc compiler in watch mode and runs the initial doc build', async function () {
