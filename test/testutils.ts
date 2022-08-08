@@ -34,7 +34,7 @@ export const targetDocPath = path.join(cwd, targetDocDir);
 export const stubSrcFile = path.join(cwd, '/src/teststubfile.ts');
 export const stubDistFile = path.join(sourceDistPath, 'teststubfile.js');
 export const stubSrcMediaFile = path.join(sourceMediaPath, '/teststubfile.css');
-export const stubDocMediaFile = path.join(targetDocPath, './dev/media/teststubfile.css');
+export const stubDocMediaFile = path.join(targetDocPath, 'dev/media/teststubfile.css');
 
 export const overrideHot: hotOptions = {
 	targetCwd: path.normalize('./'),

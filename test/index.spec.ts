@@ -67,6 +67,9 @@ describe('Unit testing for typedoc-plugin-hot-dev', function () {
 		assert.equal(stripTrailing(this.opts.sourceDistPath), stripTrailing(sourceDistPath), 'did not resolve the path for "sourcDistPath" correctly')
 
 	});
+	it('explicitly fetches the root http path', function(){
+		assert.equal(this.hot.getHttpRoot({ targetCwdPath: process.cwd() }), path.join(process.cwd(), 'docs'));
+	})
 })
 
 describe('Functional testing for typedoc-plugin-hot-dev', function () {
@@ -158,15 +161,14 @@ describe('End to End test for typedoc-plugin-hot-dev', function () {
 		assert.isTrue(this.npmTestRan, 'npm script failed to run');
 		assert.isTrue(this.npmTestFailed, 'failed npm script did not register');
 	})
-	it('triggers the browser client at the correct path', function(done){
-		assert.equal(this.opts.targetOutPath, path.join(process.cwd(), targetDocDir), 'the hot browser was not trigged');
-		setTimeout(() => done(), 100)
-	})
-	it('updates asset files on change', async function(){
+	it('updates asset files on change', function(done){
 		this.timeout(10000);
-		fs.createFileSync(stubSrcMediaFile);
-		const wasUpdated = await waitForFile(stubDocMediaFile, 5000);
-		assert.isTrue(wasUpdated, 'update was not triggered on asset change');
+		setTimeout(async () => {
+			fs.createFileSync(stubSrcMediaFile);
+			const wasUpdated = await waitForFile(stubDocMediaFile, 5000);	
+			assert.isTrue(wasUpdated, 'update was not triggered on asset change');
+			done();
+		}, 100)
 	});
 	it('updates source files on change', async function(){
 		this.timeout(30000);
