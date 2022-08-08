@@ -5,6 +5,7 @@ import { allOptions, logContexts } from '../types';
 import { HotEmitter } from '../interface/HotEmitter';
 import TypeDoc = require('typedoc');
 import { load } from '..';
+import fs from 'fs-extra';
 
 export class HotUtils {
 	emitter: HotEmitter;
@@ -36,6 +37,24 @@ export class HotUtils {
 		opts.sourceDistPath = path.join(cwd, hotOpts.sourceDist);
 
 		return opts;
+	}
+
+	/**
+	 * For compatibility with any other plugins which may override the 'out'
+	 * option, we explicitly get it from 'typedoc.json'.
+	 * @param opts 
+	 * @returns 
+	 */
+	protected getHttpRoot(opts: allOptions): string {
+		const tdPath = path.join(opts.targetCwdPath, 'typedoc.json');
+		!fs.existsSync(tdPath) && (()=>{
+			throw new Error(`Please create "${path.join(opts.targetCwdPath, 'typedoc.json')}" and set "out"`);
+		});
+		const docFolder = fs.readJSONSync(tdPath).out;
+		!docFolder && (() => {
+			throw new Error(`Please set "out" in "${tdPath}"`)
+		});
+		return path.join(opts.targetCwdPath, docFolder);
 	}
 
 	protected startWatchingFiles(opts: allOptions, emitter = this.emitter) {

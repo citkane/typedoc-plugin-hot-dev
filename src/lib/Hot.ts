@@ -58,8 +58,7 @@ export class Hot extends Spawn {
 			});
 			emitter.once('tdoc.build.init', () => {
 				emitter.log.message('hot', 'initial documents built', true);
-				!testing && browser.init({ server: this.opts.targetOutPath }); //cannot get Mocha/sinon to stub browserSync
-
+				!testing && browser.init({ server: this.getHttpRoot(this.opts) }); //cannot get Mocha/sinon to stub browserSync
 				this.fileWatcher = this.startWatchingFiles(this.opts, emitter);
 				resolve({
 					tsc: this.tsc,
