@@ -37,10 +37,14 @@ export class Hot extends Spawn {
 		this.npmScripts = [];
 	}
 
-	public async init(overrideHot: hotOptions, tsdocRunner: runners = 'node', emitter = this.emitter): Promise<{ tsc, tdoc, npmScripts, fileWatcher, opts: allOptions }> {
-		this.opts = {
-			overrideHot
-		};
+	public async init(
+		overrideHot: hotOptions,
+		tsdocRunner: runners = 'node',
+		emitter = this.emitter
+	)
+	: Promise<{ tsc, tdoc, npmScripts, fileWatcher, opts: allOptions }> 
+	{
+		this.opts = { overrideHot };
 		this.parseOptions(this.opts, this.app);
 		this.npmScripts = this.runNpmScripts(emitter, this.opts);
 		this.getTdocOptions(emitter, this.opts, new AbortController(), tsdocRunner);
