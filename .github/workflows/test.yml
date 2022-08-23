@@ -1,30 +1,37 @@
 name: TEST AND BUILD
 on:
-  workflow_dispatch:
-  workflow_call:
+    workflow_dispatch:
+    workflow_call:
+    pull_request:
+        types: [opened, reopened, edited]
+        branches:
+            - 'dev'
+    push:
+        branches:
+            - 'dev'
 
 jobs:
-  build:
-    runs-on: ubuntu-latest    
-    steps:
-      - uses: actions/checkout@v3
-      - name: install
-        uses: actions/setup-node@v3
-        with:
-          cache: 'npm'
-      - name: test
-        run: |
-          npm ci
-          npm run test
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: install
+              uses: actions/setup-node@v3
+              with:
+                  cache: 'npm'
+            - name: test
+              run: |
+                  npm ci
+                  npm run test
 
-      - name: Upload coverage artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: coverage
-          path: ./test/coverage/clover.xml
+            - name: Upload coverage artifact
+              uses: actions/upload-artifact@v3
+              with:
+                  name: coverage
+                  path: ./test/coverage/clover.xml
 
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: distribution
-          path: ./dist
+            - name: Upload build artifact
+              uses: actions/upload-artifact@v3
+              with:
+                  name: distribution
+                  path: ./dist

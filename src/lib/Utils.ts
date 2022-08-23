@@ -17,7 +17,10 @@ export class HotUtils {
 		this.timer;
 	}
 
-	protected parseOptions(opts: allOptions, app: TypeDoc.Application): allOptions {
+	protected parseOptions(
+		opts: allOptions,
+		app: TypeDoc.Application
+	): allOptions {
 		load(app);
 		opts.localHot = app.options.getValue('hot-dev');
 		app.options.addReader(new TypeDoc.TypeDocReader());
@@ -25,11 +28,11 @@ export class HotUtils {
 		opts.tdocSource = app.options['_values'];
 
 		const hotOpts = opts.localHot;
-		Object.keys(hotOpts).forEach(key => {
-			opts.tdocSource['hot-dev'][key] && (hotOpts[key] = opts.tdocSource['hot-dev'][key]);
+		Object.keys(hotOpts).forEach((key) => {
+			opts.tdocSource['hot-dev'][key] &&
+				(hotOpts[key] = opts.tdocSource['hot-dev'][key]);
 			opts.overrideHot[key] && (hotOpts[key] = opts.overrideHot[key]);
 		});
-
 
 		const cwd = path.normalize(process.cwd());
 		opts.targetCwdPath = path.normalize(path.join(cwd, hotOpts.targetCwd));
@@ -42,18 +45,25 @@ export class HotUtils {
 	/**
 	 * For compatibility with any other plugins which may override the 'out'
 	 * option, we explicitly get it from 'typedoc.json'.
-	 * @param opts 
-	 * @returns 
+	 * @param opts
+	 * @returns
 	 */
 	protected getHttpRoot(opts: allOptions): string {
 		const tdPath = path.join(opts.targetCwdPath, 'typedoc.json');
-		!fs.existsSync(tdPath) && (()=>{
-			throw new Error(`Please create "${path.join(opts.targetCwdPath, 'typedoc.json')}" and set "out"`);
-		});
+		!fs.existsSync(tdPath) &&
+			(() => {
+				throw new Error(
+					`Please create "${path.join(
+						opts.targetCwdPath,
+						'typedoc.json'
+					)}" and set "out"`
+				);
+			});
 		const docFolder = fs.readJSONSync(tdPath).out;
-		!docFolder && (() => {
-			throw new Error(`Please set "out" in "${tdPath}"`);
-		});
+		!docFolder &&
+			(() => {
+				throw new Error(`Please set "out" in "${tdPath}"`);
+			});
 		return path.join(opts.targetCwdPath, docFolder);
 	}
 
@@ -61,13 +71,16 @@ export class HotUtils {
 		const watchDirs = [opts.sourceDistPath];
 		opts.sourceMediaPath && watchDirs.push(opts.sourceMediaPath);
 
-		const watcher = chokidar.watch(watchDirs, { ignoreInitial: true })
-			.on('unlink', path => this.debounceWatchCallBack(path, emitter))
-			.on('add', path => this.debounceWatchCallBack(path, emitter))
-			.on('change', path => this.debounceWatchCallBack(path, emitter))
-			.on('error', err => emitter.log.error('hot', err.message));
+		const watcher = chokidar
+			.watch(watchDirs, { ignoreInitial: true })
+			.on('unlink', (path) => this.debounceWatchCallBack(path, emitter))
+			.on('add', (path) => this.debounceWatchCallBack(path, emitter))
+			.on('change', (path) => this.debounceWatchCallBack(path, emitter))
+			.on('error', (err) => emitter.log.error('hot', err.message));
 
-		watchDirs.forEach(dir => emitter.log.message('hot', `watching dir "${dir}"`, true));
+		watchDirs.forEach((dir) =>
+			emitter.log.message('hot', `watching dir "${dir}"`, true)
+		);
 		return watcher;
 	}
 
@@ -82,12 +95,12 @@ export class HotUtils {
 		let json = false;
 		string = string.trim();
 
-		(string.startsWith('{') && string.endsWith('}')) &&
+		string.startsWith('{') &&
+			string.endsWith('}') &&
 			(() => {
 				try {
 					json = JSON.parse(string);
-				}
-				catch (err) {
+				} catch (err) {
 					json = false;
 				}
 			})();
@@ -105,18 +118,18 @@ export class HotUtils {
 		let cont: string;
 
 		switch (type) {
-		case 'log':
-			cont = `[${context}]`;
-			break;
-		case 'warn':
-			cont = `[${context}][warning]`;
-			break;
-		case 'error':
-			cont = `[${context}][error]`;
+			case 'log':
+				cont = `[${context}]`;
+				break;
+			case 'warn':
+				cont = `[${context}][warning]`;
+				break;
+			case 'error':
+				cont = `[${context}][error]`;
 		}
-		
+
 		const messLen = message.length + cont.length;
-		(messLen >= dashLen)? dashLen = 1 : dashLen = dashLen - messLen; 
+		messLen >= dashLen ? (dashLen = 1) : (dashLen = dashLen - messLen);
 
 		message = prefix ? `${'-'.repeat(dashLen)} ${message}\n` : message;
 		prefix && (cont = `\n${cont}`);

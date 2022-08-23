@@ -2,24 +2,24 @@ import { ChildProcessWithoutNullStreams } from 'node:child_process';
 
 /**
  * The development options which can be overridden by "hot-dev" in the "typedoc.json" config file.
- * 
+ *
  */
 export interface hotOptions {
 	/**
-	 * The relative path to the target project directory from which documentation is to be built.  
+	 * The relative path to the target project directory from which documentation is to be built.
 	 * If this is not specified, it will be the actual theme itself, ie './'
-	*/
-	targetCwd?: string,
-	/**The relative path to the directory for compiled code.  
-	 * Typically `./dist`.  
+	 */
+	targetCwd?: string;
+	/**The relative path to the directory for compiled code.
+	 * Typically `./dist`.
 	 * If not specified, the default tsc `outDir` will be used.
-	*/
-	sourceDist?: string,
+	 */
+	sourceDist?: string;
 	/**
 	 * An array of npm scripts from you package.json you may want to run.
 	 * This is handy for eg. keeping a non blocking sass compiler in watch mode running.
 	 */
-	npmScripts?: string[]
+	npmScripts?: string[];
 }
 
 export type allOptions = {
@@ -41,7 +41,7 @@ export type allOptions = {
 	sourceMediaPath?: string;
 	/** The absoluete path to the source dist build directory */
 	sourceDistPath?: string;
-}
+};
 
 export interface spawnedProcess {
 	controller: AbortController;
@@ -49,7 +49,7 @@ export interface spawnedProcess {
 }
 
 /**
- * A grouping of the `tsc` and `tdoc` spawned instances 
+ * A grouping of the `tsc` and `tdoc` spawned instances
  */
 export interface processes {
 	/** a spawned typescript instance */
