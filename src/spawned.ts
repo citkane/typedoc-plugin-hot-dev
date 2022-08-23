@@ -1,13 +1,13 @@
 /**
  * #### The script to rebuild documentation from a spawned process.
- * 
+ *
  * @module spawned
  */
 
 import td = require('typedoc');
 
 const hotArgs = process.argv.slice(2);
-const getOptions = (hotArgs[0] === 'getOptions');
+const getOptions = hotArgs[0] === 'getOptions';
 
 const app = new td.Application();
 
@@ -26,17 +26,17 @@ if (getOptions) {
 	// Only do a quick build to update static assets
 	process.stdin.on('data', (message: Buffer | string) => {
 		message = message.toString('utf8').trim();
-		(message === 'buildDocs') && buildDocs(app, project, out);
+		message === 'buildDocs' && buildDocs(app, project, out);
 	});
 }
 
 /**
  * Does the final document build.
  * This provides a shortcut for ewhen media updates and does not require a full document rebuild.
- * @param app 
- * @param project 
+ * @param app
+ * @param project
  * @param out
- * 
+ *
  * @function
  */
 function buildDocs(app, project, out: string): void {
@@ -46,4 +46,3 @@ function buildDocs(app, project, out: string): void {
 		})
 		.catch((err: Error) => console.error(err));
 }
-

@@ -2,7 +2,7 @@
  * #### The entry point
  * - exports the typedoc-plugin loader
  * - exports the Hot entry class
- * 
+ *
  * @module INDEX
  */
 
@@ -13,7 +13,7 @@ import { hotOptions } from './types';
 
 /**
  * Hooks into typedoc as a module and declares the "hot-dev" options set.
- * 
+ *
  * @param app The typedoc application
  */
 export function load(app: Application) {
@@ -25,7 +25,7 @@ export function load(app: Application) {
 			defaultValue: {
 				targetCwd: './',
 				sourceDist: './dist',
-				npmScripts: []
+				npmScripts: [],
 			},
 		});
 }
