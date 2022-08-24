@@ -55,7 +55,9 @@ export class Spawn extends HotUtils {
 		return { process: tsc, controller };
 	}
 	protected getTscConfig(emitter: HotEmitter) {
-		const tsc = spawn('./node_modules/.bin/tsc', ['--showConfig']);
+		const tsc = spawn(path.join('node_modules', '.bin', 'tsc'), [
+			'--showConfig',
+		]);
 		tsc.on('error', (err: Error) =>
 			emitter.log.error('tsc', err.message.toString())
 		);
@@ -94,7 +96,7 @@ export class Spawn extends HotUtils {
 		buildCount
 	): spawnedProcess {
 		const { signal } = controller;
-		const tsdoc = spawn(command, [path.join(__dirname, '../spawned')], {
+		const tsdoc = spawn(command, [path.join(__dirname, '..', 'spawned')], {
 			cwd: opts.targetCwdPath,
 			signal,
 		});
@@ -133,7 +135,7 @@ export class Spawn extends HotUtils {
 
 		const tsdoc = spawn(
 			command,
-			[path.join(__dirname, '../spawned'), 'getOptions'],
+			[path.join(__dirname, '..', 'spawned'), 'getOptions'],
 			{ cwd: opts.targetCwdPath, signal }
 		);
 
