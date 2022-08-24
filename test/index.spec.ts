@@ -199,7 +199,7 @@ describe('End to End test for typedoc-plugin-hot-dev', function () {
 		this.timeout(30000);
 
 		const emitter = new HotEmitter();
-		emitter.on('log.message', (context, message, type, prefix) => {
+		emitter.on('log.message', (context, message) => {
 			if (context === 'npm') {
 				message = message.trim();
 				message === 'test' && (this.npmTestRan = true);
@@ -240,7 +240,7 @@ describe('End to End test for typedoc-plugin-hot-dev', function () {
 	it('updates source files on change', async function () {
 		this.timeout(30000);
 		fs.createFileSync(stubSrcFile);
-		const wasUpdated = await waitForFile(stubDistFile, 100000);
+		const wasUpdated = await waitForFile(stubDistFile, 5000);
 		assert.isTrue(
 			wasUpdated,
 			'update was not triggered on source file change'
