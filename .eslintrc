@@ -8,6 +8,9 @@
 		"es6": true
 	},
 	"extends": ["eslint:recommended", "prettier"],
+	"rules": {
+		"indent": ["error", "tab", { "SwitchCase": 1 }]
+	},
 	"overrides": [
 		{
 			"files": ["**/*.{ts,tsx}"],
