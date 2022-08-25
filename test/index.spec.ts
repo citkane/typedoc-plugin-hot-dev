@@ -23,10 +23,14 @@ import {
 	overrideHot,
 } from './testutils';
 
+const shell = process.platform === 'win32';
+
 describe('Plugin loading and environment smoke tests', function () {
 	it(`compiles into the default distribution folder`, async function () {
 		this.timeout(10000);
-		assert.doesNotThrow(() => spawnSync('npm', ['run', 'build'], { cwd }));
+		assert.doesNotThrow(() =>
+			spawnSync('npm', ['run', 'build'], { cwd, shell })
+		);
 	});
 });
 
@@ -140,7 +144,10 @@ describe('Functional testing for typedoc-plugin-hot-dev', function () {
 			done();
 		});
 	});
-	it(`watches the "${cwd}/src" folder and compiles on change`, async function () {
+	it(`watches the "${path.join(
+		cwd,
+		'src'
+	)}" folder and compiles on change`, async function () {
 		this.timeout(10000);
 		fs.createFileSync(stubSrcFile);
 		const hasWatched = await waitForFile(stubDistFile);
