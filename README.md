@@ -83,3 +83,9 @@ and fix package.json with:
 		"typedoc": "^0.23.0" //or whatever version is relevant
 	}
 ```
+
+<br /><br />
+
+## Development Guidelines and howto's
+
+Please refer to the [Wiki Page](https://github.com/citkane/typedoc-plugin-hot-dev/wiki/Development-Guidelines).

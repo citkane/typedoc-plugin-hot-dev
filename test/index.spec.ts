@@ -23,10 +23,14 @@ import {
 	overrideHot,
 } from './testutils';
 
+const shell = process.platform === 'win32';
+
 describe('Plugin loading and environment smoke tests', function () {
 	it(`compiles into the default distribution folder`, async function () {
-		this.timeout(10000);
-		assert.doesNotThrow(() => spawnSync('npm', ['run', 'build'], { cwd }));
+		this.timeout(20000);
+		assert.doesNotThrow(() =>
+			spawnSync('npm', ['run', 'build'], { cwd, shell })
+		);
 	});
 });
 
@@ -140,7 +144,10 @@ describe('Functional testing for typedoc-plugin-hot-dev', function () {
 			done();
 		});
 	});
-	it(`watches the "${cwd}/src" folder and compiles on change`, async function () {
+	it(`watches the "${path.join(
+		cwd,
+		'src'
+	)}" folder and compiles on change`, async function () {
 		this.timeout(10000);
 		fs.createFileSync(stubSrcFile);
 		const hasWatched = await waitForFile(stubDistFile);
@@ -199,7 +206,7 @@ describe('End to End test for typedoc-plugin-hot-dev', function () {
 		this.timeout(30000);
 
 		const emitter = new HotEmitter();
-		emitter.on('log.message', (context, message, type, prefix) => {
+		emitter.on('log.message', (context, message) => {
 			if (context === 'npm') {
 				message = message.trim();
 				message === 'test' && (this.npmTestRan = true);
@@ -240,7 +247,7 @@ describe('End to End test for typedoc-plugin-hot-dev', function () {
 	it('updates source files on change', async function () {
 		this.timeout(30000);
 		fs.createFileSync(stubSrcFile);
-		const wasUpdated = await waitForFile(stubDistFile, 100000);
+		const wasUpdated = await waitForFile(stubDistFile, 5000);
 		assert.isTrue(
 			wasUpdated,
 			'update was not triggered on source file change'

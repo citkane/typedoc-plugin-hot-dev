@@ -23,8 +23,8 @@ export function load(app: Application) {
 			name: 'hot-dev',
 			type: ParameterType.Mixed,
 			defaultValue: {
-				targetCwd: './',
-				sourceDist: './dist',
+				targetCwd: '.',
+				sourceDist: 'dist',
 				npmScripts: [],
 			},
 		});

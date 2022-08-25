@@ -20,25 +20,28 @@ export function waitForFile(file: string, timeout = 3000) {
 		}, timeout);
 	});
 }
-export const stripTrailing = (path) => path.replace(/\/$/, '');
+export const stripTrailing = (somePath) =>
+	somePath.replace(/\/$/, '').replace(/\\$/, '');
 
-export const cwd = path.normalize(process.cwd());
-export const tempFolder = path.normalize('./.tmp');
+export const cwd = process.cwd();
+export const tempFolder = path.normalize('.tmp');
 export const tempPath = path.join(cwd, tempFolder);
-export const sourcDistDir = path.normalize('./dist/src');
+export const sourcDistDir = path.join('dist', 'src');
 export const sourceDistPath = path.join(cwd, sourcDistDir);
 export const sourceMediaPath = path.join(cwd, tempFolder, 'media');
-export const targetDocDir = path.normalize('./docs');
+export const targetDocDir = path.normalize('docs');
 export const targetDocPath = path.join(cwd, targetDocDir);
-export const stubSrcFile = path.join(cwd, '/src/teststubfile.ts');
+export const stubSrcFile = path.join(cwd, 'src', 'teststubfile.ts');
 export const stubDistFile = path.join(sourceDistPath, 'teststubfile.js');
-export const stubSrcMediaFile = path.join(sourceMediaPath, '/teststubfile.css');
+export const stubSrcMediaFile = path.join(sourceMediaPath, 'teststubfile.css');
 export const stubDocMediaFile = path.join(
 	targetDocPath,
-	'dev/media/teststubfile.css'
+	'dev',
+	'media',
+	'teststubfile.css'
 );
 
 export const overrideHot: hotOptions = {
-	targetCwd: path.normalize('./'),
+	targetCwd: path.normalize('.'),
 	sourceDist: sourcDistDir,
 };
