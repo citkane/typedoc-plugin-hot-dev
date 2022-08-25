@@ -4,6 +4,8 @@ import { HotEmitter } from '../interface/HotEmitter';
 import { HotUtils } from './Utils';
 import { spawnedProcess, allOptions } from '../types';
 
+const shell = process.platform === 'win32';
+
 /**
  * ### Creates spawned processes.
  * - the tsc compiler in watch mode
@@ -35,7 +37,7 @@ export class Spawn extends HotUtils {
 		const { signal } = controller;
 
 		let resolved = false;
-		const tsc = spawn('npx', ['tsc', ...tscOptions], { signal });
+		const tsc = spawn('npx', ['tsc', ...tscOptions], { signal, shell });
 
 		tsc.on('error', (err: Error) =>
 			emitter.log.error('tsc', err.message.toString())
@@ -55,9 +57,11 @@ export class Spawn extends HotUtils {
 		return { process: tsc, controller };
 	}
 	protected getTscConfig(emitter: HotEmitter) {
-		const tsc = spawn(path.join('node_modules', '.bin', 'tsc'), [
-			'--showConfig',
-		]);
+		const tsc = spawn(
+			path.join('node_modules', '.bin', 'tsc'),
+			['--showConfig'],
+			{ shell }
+		);
 		tsc.on('error', (err: Error) =>
 			emitter.log.error('tsc', err.message.toString())
 		);
@@ -99,6 +103,7 @@ export class Spawn extends HotUtils {
 		const tsdoc = spawn(command, [path.join(__dirname, '..', 'spawned')], {
 			cwd: opts.targetCwdPath,
 			signal,
+			shell,
 		});
 
 		tsdoc.on('error', (err: Error) => {
@@ -136,7 +141,7 @@ export class Spawn extends HotUtils {
 		const tsdoc = spawn(
 			command,
 			[path.join(__dirname, '..', 'spawned'), 'getOptions'],
-			{ cwd: opts.targetCwdPath, signal }
+			{ cwd: opts.targetCwdPath, signal, shell }
 		);
 
 		tsdoc.on('error', (err: Error) =>
@@ -161,7 +166,7 @@ export class Spawn extends HotUtils {
 		script: string
 	): spawnedProcess {
 		const { signal } = controller;
-		const npmScript = spawn('npm', ['run', script], { signal });
+		const npmScript = spawn('npm', ['run', script], { signal, shell });
 		npmScript.on('error', (err: Error) => {
 			controller.abort();
 			npmScript.kill(0);
