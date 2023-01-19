@@ -31,6 +31,7 @@ export class Hot extends Spawn {
 
 	constructor() {
 		super(emitter);
+
 		this.tdocBuildCount = 0;
 		this.app = new TypeDoc.Application();
 		this.npmScripts = [];

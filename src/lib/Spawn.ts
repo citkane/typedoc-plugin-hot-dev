@@ -4,6 +4,8 @@ import { HotEmitter } from '../interface/HotEmitter';
 import { HotUtils } from './Utils';
 import { spawnedProcess, allOptions } from '../types';
 
+import fs from 'fs-extra';
+
 const shell = process.platform === 'win32';
 
 /**
@@ -66,14 +68,12 @@ export class Spawn extends HotUtils {
 			emitter.log.error('tsc', err.message.toString())
 		);
 		tsc.stdout.on('data', (data: Buffer) => {
-			const message = data.toString('utf8').trim();
-			const tscOpts = this.isJson(message) as {
+			const message = data.toString('utf8').trim().replace(/\n/g, '');
+			const tscOpts = this.findJsonInString(message) as {
 				compilerOptions: { outDir };
 			};
-			!tscOpts &&
-				(() => {
-					throw new Error('could not get tsc options');
-				})();
+			if (!tscOpts) throw new Error('could not get tsc options');
+
 			tsc.kill(0);
 			emitter.options.set.tsc(tscOpts);
 		});
@@ -113,14 +113,15 @@ export class Spawn extends HotUtils {
 
 		tsdoc.stdout.on('data', (data: Buffer) => {
 			const message = data.toString('utf8').trim();
+
 			emitter.log.message('tdoc', message);
 			if (message.endsWith('build done')) {
-				if (!buildCount) {
-					buildCount = 1;
-					emitter.tdoc.build.init();
-				} else {
-					emitter.tdoc.build.refreshed();
-				}
+				this.emitBuildStatus(
+					buildCount ? 'refreshed' : 'init',
+					opts.targetOutPath,
+					emitter
+				);
+				if (!buildCount) buildCount = 1;
 			}
 		});
 		tsdoc.stderr.on('data', (data: Buffer) =>
@@ -129,13 +130,26 @@ export class Spawn extends HotUtils {
 		return { process: tsdoc, controller };
 	}
 
+	private emitBuildStatus = (
+		kind: 'init' | 'refreshed',
+		docPath: string,
+		emitter: HotEmitter
+	) => {
+		if (!fs.existsSync(path.join(docPath, 'index.html')))
+			return setTimeout(
+				() => this.emitBuildStatus(kind, docPath, emitter),
+				100
+			);
+
+		emitter.tdoc.build[kind]();
+	};
+
 	protected getTdocOptions(
 		emitter: HotEmitter,
 		opts: allOptions,
 		controller: AbortController,
 		command = 'node'
 	) {
-		//const cwd = path.join(process.cwd(), opts.targetCwdPath);
 		const { signal } = controller;
 
 		const tsdoc = spawn(
@@ -149,7 +163,7 @@ export class Spawn extends HotUtils {
 		);
 		tsdoc.stdout.on('data', (data: Buffer) => {
 			const message = data.toString('utf8').trim();
-			const tsdocOpts = this.isJson(message);
+			const tsdocOpts = this.findJsonInString(message);
 			tsdocOpts && emitter.options.set.tdoc(tsdocOpts);
 		});
 		tsdoc.stderr.on('data', (data: Buffer) =>

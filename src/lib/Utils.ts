@@ -91,19 +91,21 @@ export class HotUtils {
 		}, 100);
 	}
 
-	protected isJson(string: string): false | { [key: string]: unknown } {
+	protected findJsonInString(
+		string: string
+	): false | { [key: string]: unknown } {
 		let json = false;
-		string = string.trim();
 
-		string.startsWith('{') &&
-			string.endsWith('}') &&
-			(() => {
-				try {
-					json = JSON.parse(string);
-				} catch (err) {
-					json = false;
-				}
-			})();
+		string = string.split(/\n/).find((subString) => {
+			subString = subString.trim();
+			return subString.startsWith('{') && subString.endsWith('}');
+		});
+		if (!string) return;
+		try {
+			json = JSON.parse(string.trim());
+		} catch (err) {
+			json = false;
+		}
 		return json as false | { [key: string]: unknown };
 	}
 
@@ -113,26 +115,30 @@ export class HotUtils {
 		type: 'log' | 'warn' | 'error',
 		prefix = false
 	) {
-		message = message.trim();
+		const messageArray = message.split(/\n/g);
 		let dashLen = 110;
-		let cont: string;
+		let content: string;
 
 		switch (type) {
 			case 'log':
-				cont = `[${context}]`;
+				content = `[${context}]`;
 				break;
 			case 'warn':
-				cont = `[${context}][warning]`;
+				content = `[${context}][warning]`;
 				break;
 			case 'error':
-				cont = `[${context}][error]`;
+				content = `[${context}][error]`;
 		}
+		messageArray.forEach((messagePart) => {
+			messagePart = messagePart.trimEnd();
+			const messLen = messagePart.length + content.length;
+			messLen >= dashLen ? (dashLen = 1) : (dashLen = dashLen - messLen);
 
-		const messLen = message.length + cont.length;
-		messLen >= dashLen ? (dashLen = 1) : (dashLen = dashLen - messLen);
-
-		message = prefix ? `${'-'.repeat(dashLen)} ${message}\n` : message;
-		prefix && (cont = `\n${cont}`);
-		console[type](cont, message);
+			messagePart = prefix
+				? `${'-'.repeat(dashLen)} ${messagePart}\n`
+				: messagePart;
+			prefix && (content = `\n${content}`);
+			console[type](content, messagePart);
+		});
 	}
 }
