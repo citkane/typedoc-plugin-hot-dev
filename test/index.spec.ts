@@ -165,6 +165,8 @@ describe('Functional testing for typedoc-plugin-hot-dev', function () {
 			{ overrideHot },
 			new Application()
 		);
+		allOps.targetOutPath = targetDocPath;
+
 		const startController = new AbortController();
 		const tdoc = this.hot.spawnTsDoc(
 			this.emitter,
