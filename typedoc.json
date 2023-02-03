@@ -16,7 +16,8 @@
 	"excludeExternals": true,
 	"logLevel": "Verbose",
 	"includeVersion": true,
-	"plugin": ["./dist", "typedoc-plugin-versions"],
+	"plugin": ["./dist", "typedoc-theme-yaf"],
+	"theme": "yaf",
 	"versions": {
 		"stable": "0.0"
 	},
